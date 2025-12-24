@@ -9,7 +9,7 @@ export default function Footer() {
 					{/* Logo */}
 					<div className="mb-4">
 						<Image
-							src="/cw_logo-460x174.png"
+							src="cw_logo-460x174.png"
 							alt="CW Coffee - Coffee And Eatery"
 							width={230}
 							height={87}
