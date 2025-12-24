@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Armchair } from 'lucide-react';
 
 type SeatStatus = 'available' | 'occupied';
 
@@ -55,14 +56,14 @@ export default function CheckingPage() {
 			);
 		}
 
-		// Sofa/Chair icon
+		// Armchair icon from lucide-react
 		return (
-			<svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-				<rect x="5" y="8" width="14" height="8" rx="1.5" fill={color} />
-				<rect x="5" y="6" width="14" height="3" rx="1.5" fill={color} />
-				<rect x="4" y="13" width="2" height="5" rx="1" fill={color} />
-				<rect x="18" y="13" width="2" height="5" rx="1" fill={color} />
-			</svg>
+			<Armchair 
+				className="w-6 h-6" 
+				fill={color}
+				stroke={color}
+				strokeWidth={1.5}
+			/>
 		);
 	};
 
