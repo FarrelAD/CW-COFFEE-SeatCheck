@@ -146,7 +146,7 @@ export default function Header() {
 						<div className="shrink-0 px-8">
 							<Link href="/" className="block">
 								<Image
-									src="/logo-cw-200.png"
+									src="logo-cw-200.png"
 									alt="CW Coffee - Coffee And Eatery"
 									width={60}
 									height={60}
