@@ -35,9 +35,7 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} antialiased`}
 			>
-				<Header />
 				{children}
-				<Footer />
 			</body>
 		</html>
 	);
