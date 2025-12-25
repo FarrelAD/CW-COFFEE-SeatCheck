@@ -1,6 +1,6 @@
 'use client';
 
-import OutletCard from "@/app/components/OutletCard";
+import OutletCard from "@/app/components/cards/OutletCard";
 import { outlets } from "@/app/repository/outlets";
 import Link from "next/link";
 import { useState } from "react";
