@@ -29,7 +29,7 @@ export default function OutletCard({
 			{/* Image Section - 16:10 Aspect Ratio */}
 			<div className="relative w-full overflow-hidden bg-gray-200">
 				<div className="relative w-full pb-[62.5%] overflow-hidden">
-					<Link href={`/outlet/${slug}`} className="absolute top-0 left-0 w-full h-full block">
+					<Link href={`/category/outlet/${slug}`} className="absolute top-0 left-0 w-full h-full block">
 						{!imageError ? (
 							<Image
 								src={imageUrl}
@@ -65,7 +65,7 @@ export default function OutletCard({
 			<div className="p-6 flex flex-col gap-3 flex-1">
 				<Link
 					className="no-underline group"
-					href={`/outlet/${slug}`}
+					href={`/category/outlet/${slug}`}
 				>
 					<h2 className="text-2xl font-bold text-[#1a2b4a] leading-tight transition-colors duration-300 group-hover:text-[#2d4a7c] m-0">
 						{title}
@@ -80,7 +80,7 @@ export default function OutletCard({
 
 				<Link
 					className="inline-flex items-center gap-2 text-sm font-bold text-[#1a2b4a] no-underline uppercase tracking-wide transition-all duration-300 hover:text-[#2d4a7c] hover:gap-3 mt-auto group"
-					href={`/outlet/${slug}`}
+					href={`/category/outlet/${slug}`}
 				>
 					READ MORE
 					<span className="transition-transform duration-300 group-hover:translate-x-1">
