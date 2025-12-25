@@ -45,7 +45,7 @@ export default function CheckingPage() {
 
 	const SeatIcon = ({ status, type }: { status: SeatStatus; type: string }) => {
 		const color = status === 'available' ? '#D1D5DB' : '#0a2463'; // gray-300 : navy
-		
+
 		if (type === 'door') {
 			return (
 				<svg className="w-5 h-6" viewBox="0 0 20 24" fill="none">
@@ -109,7 +109,7 @@ export default function CheckingPage() {
 						</div>
 
 						{/* QR Scanner Button */}
-						<button className="w-12 h-12 bg-[#0a2463] rounded-xl flex items-center justify-center hover:bg-[#082050] transition-colors">
+						<button className="w-12 h-12 bg-midnight-blue rounded-xl flex items-center justify-center hover:bg-[#082050] transition-colors">
 							<svg
 								className="w-6 h-6 text-white"
 								fill="none"
@@ -134,11 +134,10 @@ export default function CheckingPage() {
 				<div className="flex items-center justify-center mb-6">
 					<button
 						onClick={() => setActiveZone('zona-ac-1')}
-						className={`px-8 py-3 font-bold rounded-xl transition-colors ${
-							activeZone === 'zona-ac-1'
-								? 'bg-[#0a2463] text-yellow-400'
-								: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-						}`}
+						className={`px-8 py-3 font-bold rounded-xl transition-colors ${activeZone === 'zona-ac-1'
+								? 'bg-midnight-blue text-yellow-400'
+								: 'bg-midnight-blue text-white hover:bg-[#082050]'
+							}`}
 					>
 						Zona AC 1
 					</button>
@@ -148,25 +147,25 @@ export default function CheckingPage() {
 				<div className="flex gap-3 mb-6 overflow-x-auto pb-2">
 					<button
 						onClick={() => setActiveZone('zona-ac-2')}
-						className="px-6 py-2.5 bg-[#0a2463] text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
+						className="px-6 py-2.5 bg-midnight-blue text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
 					>
 						Zona AC 2
 					</button>
 					<button
 						onClick={() => setActiveZone('semi-outdoor-1')}
-						className="px-6 py-2.5 bg-[#0a2463] text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
+						className="px-6 py-2.5 bg-midnight-blue text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
 					>
 						SEMI OUTDOOR 1
 					</button>
 					<button
 						onClick={() => setActiveZone('semi-outdoor-2')}
-						className="px-6 py-2.5 bg-[#0a2463] text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
+						className="px-6 py-2.5 bg-midnight-blue text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
 					>
 						SEMI OUTDOOR 2
 					</button>
 					<button
 						onClick={() => setActiveZone('outdoor')}
-						className="px-6 py-2.5 bg-[#0a2463] text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
+						className="px-6 py-2.5 bg-midnight-blue text-yellow-400 font-bold rounded-lg whitespace-nowrap hover:bg-[#082050] transition-colors"
 					>
 						OUTDOOR
 					</button>
@@ -193,7 +192,7 @@ export default function CheckingPage() {
 									<SeatIcon status="occupied" type="door" />
 									<SeatIcon status="available" type="door" />
 								</div>
-								
+
 								{/* Kursi area */}
 								<div className="flex flex-col gap-2">
 									{/* Row 1 - 4 kursi */}
@@ -274,7 +273,7 @@ export default function CheckingPage() {
 									<SeatIcon status="occupied" type="door" />
 									<SeatIcon status="available" type="door" />
 								</div>
-								
+
 								{/* Kursi area - 6 rows */}
 								<div className="flex flex-col gap-1.5">
 									{/* Row 1 - 4 kursi navy */}
@@ -406,7 +405,7 @@ export default function CheckingPage() {
 							</span>
 						</div>
 						<div className="flex items-center gap-2">
-							<div className="w-8 h-8 bg-[#0a2463] rounded"></div>
+							<div className="w-8 h-8 bg-midnight-blue rounded"></div>
 							<span className="text-sm font-medium text-gray-700">
 								Masih Digunakan
 							</span>

@@ -29,7 +29,7 @@ export default function Header() {
 	return (
 		<>
 			{/* Mobile Header */}
-			<div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a2463] text-white font-bold">
+			<div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-midnight-blue text-white font-bold">
 				<div className="flex items-center justify-between px-4 py-4">
 					<button
 						onClick={() => setIsMobileMenuOpen(true)}
@@ -123,12 +123,12 @@ export default function Header() {
 			</div>
 
 			{/* Desktop Header */}
-			<div className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-[#0a2463] text-white font-bold">
-				<div className="container mx-auto px-4">
-					<div className="flex items-center justify-between h-[90px]">
+			<div className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-midnight-blue text-white font-bold">
+				<div className="container mx-auto px-4 flex justify-center">
+					<div className="flex items-center justify-center h-[90px]">
 						{/* Left Menu */}
 						<nav className="flex-1">
-							<ul className="flex items-center gap-6">
+							<ul className="flex items-center gap-6 whitespace-nowrap">
 								{leftMenuItems.map((item, index) => (
 									<li key={index}>
 										<Link
@@ -157,7 +157,7 @@ export default function Header() {
 
 						{/* Right Menu */}
 						<nav className="flex-1 flex justify-end">
-							<ul className="flex items-center gap-6">
+							<ul className="flex items-center gap-6 whitespace-nowrap">
 								{rightMenuItems.map((item, index) => (
 									<li key={index}>
 										<Link
