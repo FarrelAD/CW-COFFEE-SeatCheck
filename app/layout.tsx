@@ -28,7 +28,7 @@ export default function RootLayout({
 	return (
 		<html lang="id">
 			<body
-				className={`${roboto.variable} ${quicksand.variable} antialiased font-roboto! bg-midnight-blue!`}
+				className={`${roboto.variable} ${quicksand.variable} antialiased font-quicksand! bg-midnight-blue!`}
 			>
 				<ConditionalLayout>{children}</ConditionalLayout>
 			</body>

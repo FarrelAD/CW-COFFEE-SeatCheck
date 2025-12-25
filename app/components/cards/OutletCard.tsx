@@ -10,6 +10,7 @@ export default function OutletCard({
 	address,
 	imageUrl,
 	slug,
+	showReadMore = true,
 	className = '',
 }: {
 	id: string | number;
@@ -17,6 +18,7 @@ export default function OutletCard({
 	address: string;
 	imageUrl: string;
 	slug: string;
+	showReadMore?: boolean;
 	className?: string;
 }) {
 	const [imageError, setImageError] = useState(false);
@@ -24,7 +26,7 @@ export default function OutletCard({
 	return (
 		<article
 			id={`outlet-${id}`}
-			className={`flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full ${className} font-roboto`}
+			className={`flex flex-col bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full ${className}`}
 		>
 			{/* Image Section - 16:10 Aspect Ratio */}
 			<div className="relative w-full overflow-hidden bg-gray-200">
@@ -78,15 +80,17 @@ export default function OutletCard({
 					</p>
 				</div>
 
-				<Link
-					className="inline-flex items-center gap-2 text-sm font-bold text-[#1a2b4a] no-underline uppercase tracking-wide transition-all duration-300 hover:text-[#2d4a7c] hover:gap-3 mt-auto group"
-					href={`/category/outlet/${slug}`}
-				>
-					READ MORE
-					<span className="transition-transform duration-300 group-hover:translate-x-1">
-						→
-					</span>
-				</Link>
+				{showReadMore && (
+					<Link
+						className="inline-flex items-center gap-2 text-sm font-bold text-[#1a2b4a] no-underline uppercase tracking-wide transition-all duration-300 hover:text-[#2d4a7c] hover:gap-3 mt-auto group"
+						href={`/category/outlet/${slug}`}
+					>
+						READ MORE
+						<span className="transition-transform duration-300 group-hover:translate-x-1">
+							→
+						</span>
+					</Link>
+				)}
 			</div>
 		</article>
 	);
