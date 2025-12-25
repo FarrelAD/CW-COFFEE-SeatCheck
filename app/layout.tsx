@@ -1,23 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto } from "next/font/google";
+import { Roboto, Quicksand } from "next/font/google";
 import "./globals.css";
 import Header from "./components/header";
 import Footer from "./components/footer";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const quicksand = Quicksand({
+	variable: "--font-quicksand",
 	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
+	weight: ["300", "400", "500", "600", "700"],
 });
 
 const roboto = Roboto({
 	variable: "--font-roboto",
 	subsets: ["latin"],
-	weight: ["400", "500", "700"],
+	weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -33,9 +29,11 @@ export default function RootLayout({
 	return (
 		<html lang="id">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} antialiased`}
+				className={`${roboto.variable} ${quicksand.variable} antialiased font-roboto! bg-midnight-blue!`}
 			>
+				<Header />
 				{children}
+				<Footer />
 			</body>
 		</html>
 	);

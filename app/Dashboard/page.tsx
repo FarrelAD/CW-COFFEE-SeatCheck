@@ -50,7 +50,7 @@ export default function DashboardPage() {
 						</div>
 
 						{/* QR Scanner Button */}
-						<button className="w-12 h-12 bg-[#0a2463] rounded-xl flex items-center justify-center hover:bg-[#082050] transition-colors">
+						<button className="w-12 h-12 bg-midnight-blue rounded-xl flex items-center justify-center hover:bg-[#082050] transition-colors">
 							<svg
 								className="w-6 h-6 text-white"
 								fill="none"
@@ -72,7 +72,7 @@ export default function DashboardPage() {
 			{/* Main Content */}
 			<main className="max-w-md mx-auto px-4 py-6 pb-24">
 				{/* Guide Book Card */}
-				<div className="bg-[#0a2463] rounded-3xl p-6 mb-6 relative overflow-hidden">
+				<div className="bg-midnight-blue rounded-3xl p-6 mb-6 relative overflow-hidden">
 					<div className="relative z-10">
 						<h2 className="text-white text-3xl font-bold mb-2">Guide Book</h2>
 						<p className="text-white/90 text-sm mb-4 max-w-[200px]">
@@ -154,7 +154,7 @@ export default function DashboardPage() {
 						{/* Legend */}
 						<div className="space-y-2">
 							<div className="flex items-center gap-2">
-								<div className="w-3 h-3 rounded-full bg-[#0a2463]"></div>
+								<div className="w-3 h-3 rounded-full bg-midnight-blue"></div>
 								<span className="text-sm text-gray-700 font-medium">
 									Terpakai
 								</span>
@@ -203,7 +203,7 @@ export default function DashboardPage() {
 						{/* Legend */}
 						<div className="space-y-2">
 							<div className="flex items-center gap-2">
-								<div className="w-3 h-3 rounded-full bg-[#0a2463]"></div>
+								<div className="w-3 h-3 rounded-full bg-midnight-blue"></div>
 								<span className="text-sm text-gray-700 font-medium">
 									Terpakai
 								</span>
@@ -217,7 +217,7 @@ export default function DashboardPage() {
 				</div>
 
 				{/* Lihat Lainnya Button */}
-				<button className="w-full bg-[#0a2463] text-white font-bold py-4 rounded-2xl hover:bg-[#082050] transition-colors">
+				<button className="w-full bg-midnight-blue text-white font-bold py-4 rounded-2xl hover:bg-[#082050] transition-colors">
 					Lihat Lainnya
 				</button>
 			</main>
