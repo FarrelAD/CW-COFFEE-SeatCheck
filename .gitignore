@@ -13,6 +13,9 @@
 !.yarn/releases
 !.yarn/versions
 
+# firebase
+.firebase/
+
 # testing
 /coverage
 
