@@ -17,7 +17,7 @@ export default function DashboardPage() {
 						{/* Logo */}
 						<Link href="/" className="flex items-center gap-2">
 							<Image
-								src="/logo-cw-200.png"
+								src="logo-cw-200.png"
 								alt="CW Coffee"
 								width={48}
 								height={48}

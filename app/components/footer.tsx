@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Footer() {
 	return (
-		<footer className="bg-[#0a2463] text-white py-12 md:py-16 font-roboto">
+		<footer className="bg-midnight-blue text-white py-12 md:py-16">
 			<div className="container mx-auto px-4">
 				<div className="flex flex-col items-center text-center space-y-6">
 					{/* Logo */}
@@ -19,7 +19,7 @@ export default function Footer() {
 
 					{/* Address */}
 					<div className="max-w-2xl">
-						<p className="text-sm md:text-base font-medium leading-relaxed">
+						<p className="text-sm md:text-base font-semibold leading-relaxed">
 							Jl. Hm Suwignyo, Ruko Citra Andalas No. 1-5 Lantai 3,
 							<br />
 							Desa/Kelurahan Sungai jawi, Kec. Pontianak,

@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Dashboard - CW Coffee",
-	description: "Dashboard status CW Coffee",
+	title: "Check In - CW Coffee",
+	description: "Check In di Outlet CW Coffee",
 };
 
-export default function DashboardLayout({
+export default function CheckInLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
