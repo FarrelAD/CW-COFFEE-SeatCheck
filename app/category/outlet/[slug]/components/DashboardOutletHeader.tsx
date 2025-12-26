@@ -3,10 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 export default function DashboardOutletHeader() {
 	const params = useParams();
 	const slug = params.slug as string;
+	const pathname = usePathname();
 
 	return (
 		<header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -36,13 +38,13 @@ export default function DashboardOutletHeader() {
 					<div className="flex items-center gap-6">
 						<Link
 							href="/"
-							className="text-gray-700 font-medium hover:text-[#0a2463] transition-colors"
+							className={`text-gray-700 hover:text-midnight-blue hover:font-semibold transition-colors ${pathname === `/category/outlet/${slug}` ? "font-bold" : "font-medium"}`}
 						>
 							Home
 						</Link>
 						<Link
 							href={`/category/outlet/${slug}/checking`}
-							className="text-gray-700 font-medium hover:text-[#0a2463] transition-colors"
+							className={`text-gray-700 hover:text-midnight-blue hover:font-semibold transition-colors ${pathname === `/category/outlet/${slug}/checking` ? "font-bold" : "font-medium"}`}
 						>
 							Checking
 						</Link>
