@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Armchair, DoorOpen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Armchair, DoorOpen, ArrowLeft } from 'lucide-react';
 
 type SeatStatus = 'available' | 'occupied';
 
@@ -10,16 +11,6 @@ interface Seat {
 	id: number;
 	status: SeatStatus;
 	type: 'chair' | 'table' | 'door';
-}
-
-interface CheckingPageClientProps {
-	outletTitle: string;
-	outletAddress: string;
-	slug: string;
-	ac1Available: number;
-	ac2Available: number;
-	ac1Used: number;
-	ac2Used: number;
 }
 
 // Seat Icon Component
@@ -57,8 +48,17 @@ export default function CheckingPageClient({
 	ac2Available,
 	ac1Used,
 	ac2Used,
-}: CheckingPageClientProps) {
+}: {
+	outletTitle: string;
+	outletAddress: string;
+	slug: string;
+	ac1Available: number;
+	ac2Available: number;
+	ac1Used: number;
+	ac2Used: number;
+}) {
 	const [activeZone, setActiveZone] = useState('zona-ac-1');
+	const router = useRouter();
 
 	// Generate seat data based on capacity
 	const generateSeats = (used: number, total: number): Seat[] => {
@@ -78,6 +78,15 @@ export default function CheckingPageClient({
 
 	return (
 		<main className="max-w-4xl mx-auto px-4 py-6 pb-24">
+			{/* Back Button */}
+			<button
+				onClick={() => router.back()}
+				className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-4 transition-colors hover:cursor-pointer"
+			>
+				<ArrowLeft className="w-5 h-5" />
+				<span className="font-medium">Kembali</span>
+			</button>
+
 			{/* Header Info */}
 			<div className="mb-6">
 				<h1 className="text-2xl font-bold text-gray-900 mb-1">{outletTitle}</h1>
