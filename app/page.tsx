@@ -1,9 +1,9 @@
-import NewsGrid from './components/NewsGrid';
-import OutletGrid from './components/OutletGrid';
-import ProductsSection from './components/ProductsSection';
-import PromoCarousel from './components/PromoCarousel';
-import ContactSection from './components/ContactSection';
-import { outlets } from './repository/outlets';
+import NewsGrid from './_components/NewsGrid';
+import OutletGrid from './_components/OutletGrid';
+import ProductsSection from './_components/ProductsSection';
+import PromoCarousel from './_components/PromoCarousel';
+import ContactSection from './_components/ContactSection';
+import { outlets } from './_repository/outlets';
 
 export default function Home() {
 	// Example promo slides - replace with your actual promo images

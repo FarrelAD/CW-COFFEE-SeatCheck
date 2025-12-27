@@ -1,4 +1,4 @@
-import { getAllOutletSlugs } from "@/app/repository/outlets";
+import { getAllOutletSlugs } from "@/app/_repository/outlets";
 import DashboardOutletClient from "./DashboardOutletClient";
 
 export async function generateStaticParams() {
