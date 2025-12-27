@@ -9,7 +9,7 @@
 		]
 	},
 	"include": [
-		"**/__tests__/**/*",
+		"**/tests/**/*",
 		"**/*.test.ts",
 		"**/*.test.tsx",
 		"**/*.spec.ts",

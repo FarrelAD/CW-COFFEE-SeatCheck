@@ -1,5 +1,12 @@
-/** @type {import('jest').Config} */
-const config = {
+import type { Config } from 'jest';
+import nextJest from 'next/jest';
+
+const createJestConfig = nextJest({
+  dir: './',
+})
+
+const config: Config = {
+	verbose: true,
 	preset: 'ts-jest',
 	testEnvironment: 'jsdom',
 
@@ -16,7 +23,7 @@ const config = {
 
 	// Test match patterns
 	testMatch: [
-		'**/__tests__/**/*.[jt]s?(x)',
+		'**/tests/**/*.[jt]s?(x)',
 		'**/?(*.)+(spec|test).[jt]s?(x)',
 	],
 
@@ -48,15 +55,8 @@ const config = {
 		'<rootDir>/cypress/',
 	],
 
-	// Transform configuration
-	transform: {
-		'^.+\\.(ts|tsx)$': ['ts-jest', {
-			tsconfig: 'tsconfig.jest.json',
-		}],
-	},
-
 	// Module file extensions
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
 };
 
-module.exports = config;
+export default createJestConfig(config);
