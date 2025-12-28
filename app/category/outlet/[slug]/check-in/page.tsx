@@ -1,4 +1,4 @@
-import { getOutletCheckingData, getOutletBySlug, getAllOutletSlugs } from "@/app/repository/outlets";
+import { getOutletCheckingData, getOutletBySlug, getAllOutletSlugs } from "@/app/_repository/outlets";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {

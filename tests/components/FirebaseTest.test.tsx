@@ -5,7 +5,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import FirebaseTest from '@/app/components/FirebaseTest';
+import FirebaseTest from '@/app/_components/FirebaseTest';
 
 describe('FirebaseTest Component', () => {
 	it('should render the component title', () => {

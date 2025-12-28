@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto, Quicksand } from "next/font/google";
 import "./globals.css";
-import ConditionalLayout from "./components/ConditionalLayout";
+import ConditionalLayout from "./_components/ConditionalLayout";
 
 const quicksand = Quicksand({
 	variable: "--font-quicksand",
