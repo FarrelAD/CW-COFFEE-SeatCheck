@@ -27,10 +27,9 @@ export default async function CheckingPage(props: {
 			outletTitle={outlet.title}
 			outletAddress={outlet.address}
 			slug={params.slug}
+			outletId={outlet.id}
 			ac1Available={capacity.ac1.total - capacity.ac1.used}
 			ac2Available={capacity.ac2.total - capacity.ac2.used}
-			ac1Used={capacity.ac1.used}
-			ac2Used={capacity.ac2.used}
 		/>
 	);
 }
