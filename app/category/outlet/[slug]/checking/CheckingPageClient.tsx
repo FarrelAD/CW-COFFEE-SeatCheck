@@ -1,80 +1,190 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Armchair, DoorOpen, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Armchair } from 'lucide-react';
+import { outletLayouts, Block, AreaLayout, OutletLayout } from '../_repository/outlet_layouts';
 
-type SeatStatus = 'available' | 'occupied';
 
-interface Seat {
-	id: number;
-	status: SeatStatus;
-	type: 'chair' | 'table' | 'door';
-}
+// Helper function to parse coordinate ID (e.g., "A1" -> {row: 0, col: 0})
+const parseCoordinate = (id: string): { row: number; col: number } | null => {
+	const match = id.match(/^([A-P])(\d+)$/);
+	if (!match) return null;
 
-// Seat Icon Component
-const SeatIcon = ({ status, type }: { status: SeatStatus; type: string }) => {
-	const isOccupied = status === 'occupied';
-	const color = isOccupied ? '#0a2463' : '#D1D5DB'; // navy : gray-300
+	const letter = match[1];
+	const number = parseInt(match[2], 10);
 
-	if (type === 'door') {
-		return (
-			<DoorOpen
-				className="w-6 h-6"
-				color={color}
-				fill={isOccupied ? color : 'none'}
-				strokeWidth={2}
-			/>
-		);
-	}
+	// A=0, B=1, C=2, ..., P=15 (columns)
+	const col = letter.charCodeAt(0) - 'A'.charCodeAt(0);
+	// 1=0, 2=1, 3=2, ... (rows)
+	const row = number - 1;
 
-	// Chair icon (both chair and table use Armchair)
-	return (
-		<Armchair
-			className="w-6 h-6"
-			color={color}
-			fill={isOccupied ? color : 'none'}
-			strokeWidth={2}
-		/>
-	);
+	return { row, col };
 };
 
 export default function CheckingPageClient({
 	outletTitle,
 	outletAddress,
 	slug,
+	outletId,
 	ac1Available,
 	ac2Available,
-	ac1Used,
-	ac2Used,
 }: {
 	outletTitle: string;
 	outletAddress: string;
 	slug: string;
+	outletId: number;
 	ac1Available: number;
 	ac2Available: number;
-	ac1Used: number;
-	ac2Used: number;
 }) {
 	const [activeZone, setActiveZone] = useState('zona-ac-1');
 	const router = useRouter();
 
-	// Generate seat data based on capacity
-	const generateSeats = (used: number, total: number): Seat[] => {
-		const seats: Seat[] = [];
-		for (let i = 0; i < total; i++) {
-			seats.push({
-				id: i,
-				status: i < used ? 'occupied' : 'available',
-				type: i % 5 === 0 ? 'table' : 'chair',
-			});
-		}
-		return seats;
+	// Get layout data for this outlet
+	const outletLayout = useMemo(() => {
+		return outletLayouts.find(layout => layout.id === outletId);
+	}, [outletId]);
+
+	// Create a map of coordinates to blocks for quick lookup
+	const getBlocksMap = (areaName: string) => {
+		if (!outletLayout) return new Map<string, Block>();
+
+		const area = outletLayout.layout.find(a => a.area === areaName);
+		if (!area) return new Map<string, Block>();
+
+		const blocksMap = new Map<string, Block>();
+		area.blocks.forEach(block => {
+			const coord = parseCoordinate(block.id);
+			if (coord) {
+				const key = `${coord.row}-${coord.col}`;
+				blocksMap.set(key, block);
+			}
+		});
+
+		return blocksMap;
 	};
 
-	const ac1Seats = generateSeats(ac1Used, ac1Used + ac1Available);
-	const ac2Seats = generateSeats(ac2Used, ac2Used + ac2Available);
+	// Render a single grid block
+	const renderGridBlock = (row: number, col: number, blocksMap: Map<string, Block>) => {
+		const key = `${row}-${col}`;
+		const block = blocksMap.get(key);
+
+		if (block && block.type === 'chair') {
+			// Render chair with Armchair icon
+			const bgColor = block.status === 'used' ? 'bg-[#0a2463]' : 'bg-gray-300';
+			const iconColor = block.status === 'used' ? '#ffffff' : '#0a2463';
+
+			// Determine rotation based on face direction
+			// Default Armchair icon faces right, so we rotate from there
+			const rotationMap = {
+				'right': 'rotate-270',      // 270° - faces right
+				'down': 'rotate-0',         // 0° - faces down
+				'left': 'rotate-90',        // 90° - faces left
+				'up': '-rotate-180',        // 180° - faces up
+			};
+
+			const rotationClass = block.face ? rotationMap[block.face] : 'rotate-0';
+
+			return (
+				<div
+					key={`block-${row}-${col}`}
+					className={`w-[40px] h-[40px] border border-gray-300 flex items-center justify-center ${bgColor}`}
+					title={`${block.id} - ${block.status} - facing ${block.face}`}
+				>
+					<Armchair
+						className={`w-5 h-5 ${rotationClass}`}
+						color={iconColor}
+						fill={block.status === 'used' ? iconColor : 'none'}
+						strokeWidth={2}
+					/>
+				</div>
+			);
+		}
+
+		if (block && block.type === 'table') {
+			// Check neighboring blocks to merge tables
+			const topKey = `${row - 1}-${col}`;
+			const bottomKey = `${row + 1}-${col}`;
+			const leftKey = `${row}-${col - 1}`;
+			const rightKey = `${row}-${col + 1}`;
+
+			const hasTableTop = blocksMap.get(topKey)?.type === 'table';
+			const hasTableBottom = blocksMap.get(bottomKey)?.type === 'table';
+			const hasTableLeft = blocksMap.get(leftKey)?.type === 'table';
+			const hasTableRight = blocksMap.get(rightKey)?.type === 'table';
+
+			// Calculate width and height - extend to 40px when adjacent tables exist
+			const width = hasTableLeft || hasTableRight ? 'w-[40px]' : 'w-[28px]';
+			const height = hasTableTop || hasTableBottom ? 'h-[40px]' : 'h-[28px]';
+
+			// Remove border-radius when connected to other tables
+			const hasAnyConnection = hasTableTop || hasTableBottom || hasTableLeft || hasTableRight;
+			const borderRadius = hasAnyConnection ? '0px' : '2px';
+
+			// Build border classes for outer container - remove borders where tables connect
+			const outerBorderClasses = [
+				'border',
+				'border-gray-300',
+				hasTableTop ? 'border-t-0' : '',
+				hasTableBottom ? 'border-b-0' : '',
+				hasTableLeft ? 'border-l-0' : '',
+				hasTableRight ? 'border-r-0' : '',
+			].filter(Boolean).join(' ');
+
+			return (
+				<div
+					key={`block-${row}-${col}`}
+					className={`w-[40px] h-[40px] ${outerBorderClasses} flex items-center justify-center bg-white`}
+					title={`${block.id} - table`}
+				>
+					<div
+						className={`${width} ${height} bg-[#8B4513]`}
+						style={{ borderRadius }}
+					/>
+				</div>
+			);
+		}
+
+		if (block && block.type === 'walkway') {
+			// Check neighboring blocks to merge walkways
+			const topKey = `${row - 1}-${col}`;
+			const bottomKey = `${row + 1}-${col}`;
+			const leftKey = `${row}-${col - 1}`;
+			const rightKey = `${row}-${col + 1}`;
+
+			const hasWalkwayTop = blocksMap.get(topKey)?.type === 'walkway';
+			const hasWalkwayBottom = blocksMap.get(bottomKey)?.type === 'walkway';
+			const hasWalkwayLeft = blocksMap.get(leftKey)?.type === 'walkway';
+			const hasWalkwayRight = blocksMap.get(rightKey)?.type === 'walkway';
+
+			// Build border classes - remove borders where walkways connect
+			const borderClasses = [
+				'border-2',
+				'border-[#0a2463]',
+				hasWalkwayTop ? 'border-t-0' : '',
+				hasWalkwayBottom ? 'border-b-0' : '',
+				hasWalkwayLeft ? 'border-l-0' : '',
+				hasWalkwayRight ? 'border-r-0' : '',
+			].filter(Boolean).join(' ');
+
+			return (
+				<div
+					key={`block-${row}-${col}`}
+					className={`w-[40px] h-[40px] bg-white ${borderClasses}`}
+					title={`${block.id} - walkway`}
+				/>
+			);
+		}
+
+		// Empty block - normal floor (beige color)
+		return (
+			<div
+				key={`block-${row}-${col}`}
+				className="w-[40px] h-[40px] bg-[#F5F5DC]"
+			/>
+		);
+	};
 
 	return (
 		<main className="max-w-4xl mx-auto px-4 py-6 pb-24">
@@ -167,153 +277,18 @@ export default function CheckingPageClient({
 				{activeZone === 'zona-ac-1' && (
 					<>
 						<h3 className="text-lg font-bold text-gray-900 mb-4">Zona AC 1</h3>
-						{/* Main Grid - 2x2 sections */}
-						<div className="grid grid-cols-2 gap-0 relative">
-							{/* Vertical center line */}
-							<div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-900 -translate-x-1/2 z-10"></div>
-							{/* Horizontal center line */}
-							<div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-900 -translate-y-1/2 z-10"></div>
-
-							{/* TOP LEFT SECTION */}
-							<div className="pr-8 pb-8">
-								<div className="flex gap-2">
-									{/* 6 Doors vertikal di kiri */}
-									<div className="flex flex-col gap-0.5">
-										{ac1Seats.slice(0, 6).map((seat) => (
-											<SeatIcon key={`door-tl-${seat.id}`} status={seat.status} type="door" />
-										))}
+						{/* Chess-like Grid: 16 columns × 17 rows */}
+						<div className="overflow-x-auto">
+							<div className="inline-block border-2 border-gray-900">
+								{/* Render each row as a flex container */}
+								{Array.from({ length: 17 }).map((_, rowIndex) => (
+									<div key={`row-${rowIndex}`} className="flex">
+										{Array.from({ length: 16 }).map((_, colIndex) => {
+											const blocksMap = getBlocksMap('Zona AC 1');
+											return renderGridBlock(rowIndex, colIndex, blocksMap);
+										})}
 									</div>
-
-									{/* Kursi area */}
-									<div className="flex flex-col gap-2">
-										{/* Row 1 - 4 kursi */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(6, 10).map((seat) => (
-												<SeatIcon key={`tl-r1-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-										{/* Row 2 - 4 kursi */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(10, 14).map((seat) => (
-												<SeatIcon key={`tl-r2-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-										{/* Row 3 - 4 kursi */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(14, 18).map((seat) => (
-												<SeatIcon key={`tl-r3-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-										{/* Separator horizontal tebal */}
-										<div className="h-1 bg-gray-900 my-0.5"></div>
-										{/* Row 4 - 4 kursi bawah */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(18, 22).map((seat) => (
-												<SeatIcon key={`tl-r4-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-									</div>
-								</div>
-							</div>
-
-							{/* TOP RIGHT SECTION */}
-							<div className="pl-8 pb-8">
-								<div className="flex gap-3">
-									{/* Main area */}
-									<div className="flex flex-col gap-2">
-										{/* Grid atas 4x4 */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(22, 38).map((seat) => (
-												<SeatIcon key={`tr-top-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-										{/* Separator horizontal tebal (counter/bar) */}
-										<div className="h-1 bg-gray-900 my-0.5"></div>
-										{/* Grid bawah 4x4 */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(38, 54).map((seat) => (
-												<SeatIcon key={`tr-bottom-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-									</div>
-									{/* 2 kursi di pojok kanan atas */}
-									<div className="flex flex-col gap-1">
-										{ac1Seats.slice(54, 56).map((seat) => (
-											<SeatIcon key={`tr-corner-${seat.id}`} status={seat.status} type={seat.type} />
-										))}
-									</div>
-								</div>
-							</div>
-
-							{/* BOTTOM LEFT SECTION */}
-							<div className="pr-8 pt-8">
-								<div className="flex gap-2">
-									{/* 6 Doors vertikal di kiri */}
-									<div className="flex flex-col gap-0.5">
-										{ac1Seats.slice(56, 62).map((seat) => (
-											<SeatIcon key={`door-bl-${seat.id}`} status={seat.status} type="door" />
-										))}
-									</div>
-
-									{/* Kursi area - 6 rows */}
-									<div className="flex flex-col gap-1.5">
-										{/* Row 1 - 4 kursi */}
-										<div className="grid grid-cols-4 gap-1">
-											{ac1Seats.slice(62, 66).map((seat) => (
-												<SeatIcon key={`bl-r1-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-										{/* Separator */}
-										<div className="h-0.5 bg-gray-900 my-0.5"></div>
-										{/* Row 2-6 */}
-										{[0, 1, 2, 3, 4].map((rowIdx) => (
-											<div key={`bl-row-${rowIdx}`} className="grid grid-cols-4 gap-1">
-												{ac1Seats.slice(66 + rowIdx * 4, 70 + rowIdx * 4).map((seat) => (
-													<SeatIcon key={`bl-r${rowIdx + 2}-${seat.id}`} status={seat.status} type={seat.type} />
-												))}
-											</div>
-										))}
-									</div>
-								</div>
-							</div>
-
-							{/* BOTTOM RIGHT SECTION */}
-							<div className="pl-8 pt-8">
-								<div className="flex gap-2">
-									{/* Left column - 2 kursi wide */}
-									<div className="flex flex-col gap-1.5">
-										{/* Top group - 2x2 */}
-										<div className="grid grid-cols-2 gap-1">
-											{ac1Seats.slice(86, 90).map((seat) => (
-												<SeatIcon key={`br-left-top-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-										{/* Bottom group - 2x4 */}
-										<div className="grid grid-cols-2 gap-1">
-											{ac1Seats.slice(90, 98).map((seat) => (
-												<SeatIcon key={`br-left-bottom-${seat.id}`} status={seat.status} type={seat.type} />
-											))}
-										</div>
-									</div>
-
-									{/* Center - 6 Doors vertikal */}
-									<div className="flex flex-col gap-0.5">
-										{ac1Seats.slice(98, 104).map((seat) => (
-											<SeatIcon key={`door-br-${seat.id}`} status={seat.status} type="door" />
-										))}
-									</div>
-
-									{/* Right column - 2 kursi wide, banyak rows */}
-									<div className="flex flex-col gap-1.5">
-										{[0, 1, 2, 3, 4, 5].map((rowIdx) => (
-											<div key={`br-right-row-${rowIdx}`} className="grid grid-cols-2 gap-1">
-												{ac1Seats.slice(104 + rowIdx * 2, 106 + rowIdx * 2).map((seat) => (
-													<SeatIcon key={`br-r${rowIdx}-${seat.id}`} status={seat.status} type={seat.type} />
-												))}
-											</div>
-										))}
-									</div>
-								</div>
+								))}
 							</div>
 						</div>
 					</>
@@ -322,12 +297,19 @@ export default function CheckingPageClient({
 				{activeZone === 'zona-ac-2' && (
 					<>
 						<h3 className="text-lg font-bold text-gray-900 mb-4">Zona AC 2</h3>
-						<div className="grid grid-cols-6 gap-2">
-							{ac2Seats.map((seat) => (
-								<div key={`ac2-${seat.id}`} className="flex items-center justify-center">
-									<SeatIcon status={seat.status} type={seat.type} />
-								</div>
-							))}
+						{/* Chess-like Grid: 16 columns × 17 rows */}
+						<div className="overflow-x-auto">
+							<div className="inline-block border-2 border-gray-900">
+								{/* Render each row as a flex container */}
+								{Array.from({ length: 17 }).map((_, rowIndex) => (
+									<div key={`row-${rowIndex}`} className="flex">
+										{Array.from({ length: 16 }).map((_, colIndex) => {
+											const blocksMap = getBlocksMap('Zona AC 2');
+											return renderGridBlock(rowIndex, colIndex, blocksMap);
+										})}
+									</div>
+								))}
+							</div>
 						</div>
 					</>
 				)}
@@ -343,7 +325,7 @@ export default function CheckingPageClient({
 					<div className="flex items-center gap-2">
 						<div className="w-8 h-8 bg-gray-300 rounded"></div>
 						<span className="text-sm font-medium text-gray-700">
-							Sudah Tersedia
+							Kosong
 						</span>
 					</div>
 					<div className="flex items-center gap-2">
@@ -362,6 +344,6 @@ export default function CheckingPageClient({
 			>
 				Kembali ke Dashboard
 			</Link>
-		</main>
+		</main >
 	);
 }

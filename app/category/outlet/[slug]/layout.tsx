@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import DashboardOutletHeader from "./components/DashboardOutletHeader";
+import DashboardOutletHeader from "./_components/DashboardOutletHeader";
 
 export const metadata: Metadata = {
 	title: "Dashboard - CW Coffee",
