@@ -13,17 +13,21 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [isScanning, setIsScanning] = useState(false);
+	const isScanningRef = useRef(false); // Track scanning state synchronously
 	const [scannedData, setScannedData] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 	const animationFrameRef = useRef<number | null>(null);
 	const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-	// Initialize camera and start scanning
+	/**
+	 * Initialize camera and start scanning
+	 */
 	const startScanning = async () => {
 		try {
 			setError(null);
 			setIsScanning(true);
+			isScanningRef.current = true; // Set ref synchronously
 
 			// Check if mediaDevices is supported
 			if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -50,6 +54,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		} catch (err: any) {
 			console.error('Camera access error:', err);
 			setIsScanning(false);
+			isScanningRef.current = false; // Update ref
 
 			// Handle specific error types
 			if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
@@ -70,86 +75,112 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		}
 	};
 
-	// Scan QR code using requestAnimationFrame
+	/**
+	 * Continue scanning on next animation frame
+	 */
+	const continueScanning = () => {
+		if (isScanningRef.current) {
+			animationFrameRef.current = requestAnimationFrame(scanQRCode);
+		}
+	};
+
+	/**
+	 * Handle QR code scan result
+	 */
+	const handleQRCodeResult = (result: any) => {
+		if (!result) {
+			continueScanning();
+			return;
+		}
+
+		const data = result.getText();
+		setScannedData(data);
+
+		if (onScan) {
+			onScan(data);
+		}
+
+		stopScanning();
+		setShowSuccessModal(true);
+	};
+
+	/**
+	 * Handle QR code scan error
+	 */
+	const handleQRCodeError = (err: any) => {
+		if (!(err instanceof NotFoundException)) {
+			console.error('QR Scan error:', err);
+		}
+		continueScanning();
+	};
+
+	/**
+	 * Process video frame and attempt to decode QR code
+	 */
+	const processVideoFrame = (video: HTMLVideoElement) => {
+		// Create canvas if needed
+		if (!canvasRef.current) {
+			canvasRef.current = document.createElement('canvas');
+		}
+
+		const canvas = canvasRef.current;
+		const context = canvas.getContext('2d');
+
+		if (!context) return;
+
+		// Capture video frame to canvas
+		canvas.width = video.videoWidth;
+		canvas.height = video.videoHeight;
+		context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+		// Convert canvas to image
+		const img = new Image();
+		img.src = canvas.toDataURL();
+
+		img.onload = () => {
+			if (!codeReaderRef.current) return;
+
+			codeReaderRef.current
+				.decodeFromImage(img)
+				.then(handleQRCodeResult)
+				.catch(handleQRCodeError);
+		};
+	};
+
+	/**
+	 * Scan QR code using requestAnimationFrame
+	 */
 	const scanQRCode = () => {
-		if (!videoRef.current || !codeReaderRef.current || !isScanning) {
+		// Early return if not ready
+		if (!videoRef.current || !codeReaderRef.current || !isScanningRef.current) {
 			return;
 		}
 
 		const video = videoRef.current;
 
-		// Check if video is ready
-		if (video.readyState === video.HAVE_ENOUGH_DATA) {
-			try {
-				// Create a canvas to capture video frame
-				if (!canvasRef.current) {
-					canvasRef.current = document.createElement('canvas');
-				}
+		// Wait for video to be ready
+		if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+			continueScanning();
+			return;
+		}
 
-				const canvas = canvasRef.current;
-				const context = canvas.getContext('2d');
-
-				if (context) {
-					canvas.width = video.videoWidth;
-					canvas.height = video.videoHeight;
-					context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-					// Convert canvas to image
-					const img = new Image();
-					img.src = canvas.toDataURL();
-
-					img.onload = () => {
-						// Try to decode from image
-						if (codeReaderRef.current) {
-							codeReaderRef.current.decodeFromImage(img)
-								.then((result) => {
-									if (result) {
-										const data = result.getText();
-										setScannedData(data);
-										if (onScan) {
-											onScan(data);
-										}
-										// Stop scanning and show success modal
-										stopScanning();
-										setShowSuccessModal(true);
-									} else {
-										// Continue scanning
-										if (isScanning) {
-											animationFrameRef.current = requestAnimationFrame(scanQRCode);
-										}
-									}
-								})
-								.catch((err) => {
-									// Continue scanning if no QR code found
-									if (!(err instanceof NotFoundException)) {
-										console.error('QR Scan error:', err);
-									}
-									if (isScanning) {
-										animationFrameRef.current = requestAnimationFrame(scanQRCode);
-									}
-								});
-						}
-					};
-				}
-			} catch (err) {
-				console.error('Scan frame error:', err);
-				if (isScanning) {
-					animationFrameRef.current = requestAnimationFrame(scanQRCode);
-				}
-			}
-		} else {
-			// Video not ready, try again
-			if (isScanning) {
-				animationFrameRef.current = requestAnimationFrame(scanQRCode);
-			}
+		// Process the video frame
+		try {
+			processVideoFrame(video);
+		} catch (err) {
+			console.error('Scan frame error:', err);
+			continueScanning();
 		}
 	};
 
-	// Retry with default camera settings (fallback)
+	/**
+	 * Retry with default camera settings (fallback)
+	 */
 	const retryWithDefaultCamera = async () => {
 		try {
 			setError(null);
 			setIsScanning(true);
+			isScanningRef.current = true; // Set ref synchronously
 
 			const stream = await navigator.mediaDevices.getUserMedia({
 				video: true // Use default camera
@@ -169,11 +200,14 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		} catch (err: any) {
 			console.error('Retry camera access error:', err);
 			setIsScanning(false);
+			isScanningRef.current = false; // Update ref
 			setError('Failed to access camera. Please check your permissions and try again.');
 		}
 	};
 
-	// Stop scanning and release camera
+	/**
+	 * Stop scanning and release camera
+	 */
 	const stopScanning = () => {
 		// Cancel animation frame
 		if (animationFrameRef.current) {
@@ -193,9 +227,12 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 			codeReaderRef.current.reset();
 		}
 		setIsScanning(false);
+		isScanningRef.current = false; // Update ref
 	};
 
-	// Handle modal close
+	/**
+	 * Handle modal close
+	 */
 	const handleClose = () => {
 		stopScanning();
 		setScannedData(null);
@@ -203,8 +240,10 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		onClose();
 	};
 
-	// Close modal on ESC key press
 	useEffect(() => {
+		/**
+		 * Close modal on ESC key press
+		 */
 		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === 'Escape') handleClose();
 		};
@@ -220,8 +259,10 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		};
 	}, [isOpen]);
 
-	// Cleanup on unmount
 	useEffect(() => {
+		/**
+		 * Cleanup on unmount
+		 */
 		return () => {
 			stopScanning();
 		};
