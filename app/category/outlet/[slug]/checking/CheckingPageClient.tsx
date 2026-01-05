@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Armchair } from 'lucide-react';
-import { outletLayouts, Block, AreaLayout, OutletLayout } from '../_repository/outlet_layouts';
+import { outletLayouts, Block, parseGridLayout } from '../_repository/outlet_layouts';
 
 
 // Helper function to parse coordinate ID (e.g., "A1" -> {row: 0, col: 0})
@@ -38,7 +38,6 @@ export default function CheckingPageClient({
 	ac1Available: number;
 	ac2Available: number;
 }) {
-	const [activeZone, setActiveZone] = useState('zona-ac-1');
 	const router = useRouter();
 
 	// Get layout data for this outlet
@@ -46,15 +45,58 @@ export default function CheckingPageClient({
 		return outletLayouts.find(layout => layout.id === outletId);
 	}, [outletId]);
 
-	// Create a map of coordinates to blocks for quick lookup
+	// Get available areas from layout
+	const availableAreas = useMemo(() => {
+		if (!outletLayout) return [];
+		return outletLayout.layout.map(area => area.area);
+	}, [outletLayout]);
+
+	// Set first area as default active zone
+	const [activeZone, setActiveZone] = useState('');
+
+	// Update active zone when areas are loaded
+	useEffect(() => {
+		if (availableAreas.length > 0 && !activeZone) {
+			setActiveZone(availableAreas[0]);
+		}
+	}, [availableAreas, activeZone]);
+
+	/**
+	 * Get dimensions for an area
+	 * @param areaName 
+	 * @returns 
+	 */
+	const getAreaDimensions = (areaName: string) => {
+		if (!outletLayout) return { width: 16, height: 17 }; // Default fallback
+
+		const area = outletLayout.layout.find(a => a.area === areaName);
+		if (!area) return { width: 16, height: 17 };
+
+		// Check if it's a grid layout with dimensions
+		if ('dimensions' in area) {
+			return area.dimensions;
+		}
+
+		// Fallback for old format
+		return { width: 16, height: 17 };
+	};
+
+	/**
+	 * Create a map of coordinates to blocks for quick lookup
+	 * @param areaName 
+	 * @returns 
+	 */
 	const getBlocksMap = (areaName: string) => {
 		if (!outletLayout) return new Map<string, Block>();
 
 		const area = outletLayout.layout.find(a => a.area === areaName);
 		if (!area) return new Map<string, Block>();
 
+		// Check if it's a grid layout or traditional blocks layout
+		const blocks = 'grid' in area ? parseGridLayout(area) : area.blocks;
+
 		const blocksMap = new Map<string, Block>();
-		area.blocks.forEach(block => {
+		blocks.forEach((block: Block) => {
 			const coord = parseCoordinate(block.id);
 			if (coord) {
 				const key = `${coord.row}-${coord.col}`;
@@ -65,7 +107,13 @@ export default function CheckingPageClient({
 		return blocksMap;
 	};
 
-	// Render a single grid block
+	/**
+	 * Render a single grid block
+	 * @param row 
+	 * @param col 
+	 * @param blocksMap 
+	 * @returns 
+	 */
 	const renderGridBlock = (row: number, col: number, blocksMap: Map<string, Block>) => {
 		const key = `${row}-${col}`;
 		const block = blocksMap.get(key);
@@ -219,106 +267,58 @@ export default function CheckingPageClient({
 				</div>
 			</div>
 
-			{/* Zone Tabs */}
-			<div className="flex items-center justify-center mb-6">
-				<button
-					onClick={() => setActiveZone('zona-ac-1')}
-					className={`px-8 py-3 font-bold rounded-xl transition-colors ${activeZone === 'zona-ac-1'
-						? 'bg-[#0a2463] text-yellow-400'
-						: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-						}`}
-				>
-					Zona AC 1
-				</button>
-			</div>
-
-			{/* Secondary Zone Buttons */}
+			{/* Dynamic Zone Tabs */}
 			<div className="flex gap-3 mb-6 overflow-x-auto pb-2">
-				<button
-					onClick={() => setActiveZone('zona-ac-2')}
-					className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${activeZone === 'zona-ac-2'
-						? 'bg-[#0a2463] text-yellow-400'
-						: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-						}`}
-				>
-					Zona AC 2
-				</button>
-				<button
-					onClick={() => setActiveZone('semi-outdoor-1')}
-					className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${activeZone === 'semi-outdoor-1'
-						? 'bg-[#0a2463] text-yellow-400'
-						: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-						}`}
-				>
-					SEMI OUTDOOR 1
-				</button>
-				<button
-					onClick={() => setActiveZone('semi-outdoor-2')}
-					className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${activeZone === 'semi-outdoor-2'
-						? 'bg-[#0a2463] text-yellow-400'
-						: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-						}`}
-				>
-					SEMI OUTDOOR 2
-				</button>
-				<button
-					onClick={() => setActiveZone('outdoor')}
-					className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${activeZone === 'outdoor'
-						? 'bg-[#0a2463] text-yellow-400'
-						: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-						}`}
-				>
-					OUTDOOR
-				</button>
+				{availableAreas.map((areaName, index) => (
+					<button
+						key={areaName}
+						onClick={() => setActiveZone(areaName)}
+						className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${activeZone === areaName
+							? 'bg-[#0a2463] text-yellow-400'
+							: 'bg-[#0a2463] text-white hover:bg-[#082050]'
+							}`}
+					>
+						{areaName.toUpperCase()}
+					</button>
+				))}
 			</div>
 
 			{/* Floor Plan */}
 			<div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-				{activeZone === 'zona-ac-1' && (
-					<>
-						<h3 className="text-lg font-bold text-gray-900 mb-4">Zona AC 1</h3>
-						{/* Chess-like Grid: 16 columns × 17 rows */}
-						<div className="overflow-x-auto">
-							<div className="inline-block border-2 border-gray-900">
-								{/* Render each row as a flex container */}
-								{Array.from({ length: 17 }).map((_, rowIndex) => (
-									<div key={`row-${rowIndex}`} className="flex">
-										{Array.from({ length: 16 }).map((_, colIndex) => {
-											const blocksMap = getBlocksMap('Zona AC 1');
-											return renderGridBlock(rowIndex, colIndex, blocksMap);
-										})}
-									</div>
-								))}
-							</div>
-						</div>
-					</>
-				)}
+				{(() => {
+					const area = outletLayout?.layout.find(a => a.area === activeZone);
+					const hasGrid = area && 'grid' in area && area.grid.length > 0;
 
-				{activeZone === 'zona-ac-2' && (
-					<>
-						<h3 className="text-lg font-bold text-gray-900 mb-4">Zona AC 2</h3>
-						{/* Chess-like Grid: 16 columns × 17 rows */}
-						<div className="overflow-x-auto">
-							<div className="inline-block border-2 border-gray-900">
-								{/* Render each row as a flex container */}
-								{Array.from({ length: 17 }).map((_, rowIndex) => (
-									<div key={`row-${rowIndex}`} className="flex">
-										{Array.from({ length: 16 }).map((_, colIndex) => {
-											const blocksMap = getBlocksMap('Zona AC 2');
-											return renderGridBlock(rowIndex, colIndex, blocksMap);
-										})}
-									</div>
-								))}
+					if (!hasGrid) {
+						return (
+							<div className="text-center py-12">
+								<p className="text-gray-500">Denah untuk zona ini sedang dalam pengembangan</p>
 							</div>
-						</div>
-					</>
-				)}
+						);
+					}
 
-				{(activeZone === 'semi-outdoor-1' || activeZone === 'semi-outdoor-2' || activeZone === 'outdoor') && (
-					<div className="text-center py-12">
-						<p className="text-gray-500">Dena untuk zona ini sedang dalam pengembangan</p>
-					</div>
-				)}
+					return (
+						<>
+							<h3 className="text-lg font-bold text-gray-900 mb-4">{activeZone}</h3>
+							{/* Dynamic Grid based on area dimensions */}
+							<div className="overflow-x-auto">
+								<div className="inline-block border-2 border-gray-900">
+									{(() => {
+										const dimensions = getAreaDimensions(activeZone);
+										const blocksMap = getBlocksMap(activeZone);
+										return Array.from({ length: dimensions.height }).map((_, rowIndex) => (
+											<div key={`row-${rowIndex}`} className="flex">
+												{Array.from({ length: dimensions.width }).map((_, colIndex) => {
+													return renderGridBlock(rowIndex, colIndex, blocksMap);
+												})}
+											</div>
+										));
+									})()}
+								</div>
+							</div>
+						</>
+					);
+				})()}
 
 				{/* Legend */}
 				<div className="flex items-center justify-center gap-8 mt-8 pt-6 border-t-2 border-gray-900">
