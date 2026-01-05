@@ -1,0 +1,42 @@
+{
+	"rules": {
+		"outlets": {
+			"$outletId": {
+				".read": true,
+				".write": "auth != null",
+				"seats": {
+					"$zoneName": {
+						"$seatId": {
+							".validate": "newData.hasChildren(['status', 'updatedAt'])",
+							"status": {
+								".validate": "newData.isString() && (newData.val() == 'available' || newData.val() == 'used' || newData.val() == 'reserved')"
+							},
+							"face": {
+								".validate": "newData.isString() && (newData.val() == 'up' || newData.val() == 'down' || newData.val() == 'left' || newData.val() == 'right')"
+							},
+							"updatedAt": {
+								".validate": "newData.isNumber()"
+							}
+						}
+					}
+				},
+				"capacity": {
+					".read": true,
+					".write": "auth != null",
+					"$zoneName": {
+						".validate": "newData.hasChildren(['total', 'used', 'available'])",
+						"total": {
+							".validate": "newData.isNumber() && newData.val() >= 0"
+						},
+						"used": {
+							".validate": "newData.isNumber() && newData.val() >= 0"
+						},
+						"available": {
+							".validate": "newData.isNumber() && newData.val() >= 0"
+						}
+					}
+				}
+			}
+		}
+	}
+}

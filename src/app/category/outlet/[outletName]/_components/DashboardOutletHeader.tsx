@@ -10,7 +10,7 @@ import QRScannerModal from './QRScannerModal';
 
 export default function DashboardOutletHeader() {
 	const params = useParams();
-	const slug = params.slug as string;
+	const outletName = params.outletName as string;
 	const pathname = usePathname();
 	const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
@@ -42,14 +42,14 @@ export default function DashboardOutletHeader() {
 						{/* Nav Links */}
 						<div className="flex items-center gap-6">
 							<Link
-								href={`/category/outlet/${slug}`}
-								className={`text-gray-700 hover:text-midnight-blue hover:font-semibold transition-colors ${pathname === `/category/outlet/${slug}` ? "font-bold" : "font-medium"}`}
+								href={`/category/outlet/${outletName}`}
+								className={`text-gray-700 hover:text-midnight-blue hover:font-semibold transition-colors ${pathname === `/category/outlet/${outletName}` ? "font-bold" : "font-medium"}`}
 							>
 								Home
 							</Link>
 							<Link
-								href={`/category/outlet/${slug}/checking`}
-								className={`text-gray-700 hover:text-midnight-blue hover:font-semibold transition-colors ${pathname === `/category/outlet/${slug}/checking` ? "font-bold" : "font-medium"}`}
+								href={`/category/outlet/${outletName}/checking`}
+								className={`text-gray-700 hover:text-midnight-blue hover:font-semibold transition-colors ${pathname === `/category/outlet/${outletName}/checking` ? "font-bold" : "font-medium"}`}
 							>
 								Checking
 							</Link>
