@@ -3,7 +3,7 @@ import OutletGrid from './_components/OutletGrid';
 import ProductsSection from './_components/ProductsSection';
 import PromoCarousel from './_components/PromoCarousel';
 import ContactSection from './_components/ContactSection';
-import { outlets } from './_repository/outlets';
+import { outlets } from '@/lib/data/outlets';
 
 export default function Home() {
 	// Example promo slides - replace with your actual promo images

@@ -1,4 +1,11 @@
-export const outlets = [
+/**
+ * Outlet Data Repository
+ * Centralized outlet information for all CW Coffee locations
+ */
+
+import type { Outlet } from '@/lib/types';
+
+export const outlets: Outlet[] = [
 	{
 		id: 1,
 		title: 'Outlet Malang 3',
@@ -106,38 +113,23 @@ export const outlets = [
 	},
 ];
 
-export const getAllOutletSlugs = () => {
+/**
+ * Get all outlet slugs for static generation
+ */
+export function getAllOutletSlugs(): string[] {
 	return outlets.map((outlet) => outlet.slug);
-};
+}
 
-export const getOutletBySlug = (slug: string) => {
+/**
+ * Get outlet by slug
+ */
+export function getOutletBySlug(slug: string): Outlet | undefined {
 	return outlets.find((outlet) => outlet.slug === slug);
-};
+}
 
-// Mock checking data for each outlet
-export const getOutletCheckingData = (slug: string) => {
-	// Generate different data based on outlet
-	const outlet = getOutletBySlug(slug);
-	if (!outlet) return null;
-
-	// Different capacity data for each outlet (mock data)
-	const capacityVariations = [
-		{ ac1: { used: 150, total: 200 }, ac2: { used: 120, total: 200 } },
-		{ ac1: { used: 180, total: 200 }, ac2: { used: 160, total: 200 } },
-		{ ac1: { used: 100, total: 200 }, ac2: { used: 90, total: 200 } },
-		{ ac1: { used: 140, total: 200 }, ac2: { used: 130, total: 200 } },
-	];
-
-	const variation = capacityVariations[outlet.id % capacityVariations.length];
-
-	return {
-		outletId: outlet.id,
-		outletName: outlet.title,
-		outletAddress: outlet.address,
-		capacity: {
-			ac1: variation.ac1,
-			ac2: variation.ac2,
-		},
-		lastUpdated: new Date().toISOString(),
-	};
-};
+/**
+ * Get outlet by ID
+ */
+export function getOutletById(id: number): Outlet | undefined {
+	return outlets.find((outlet) => outlet.id === id);
+}

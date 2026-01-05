@@ -1,10 +1,10 @@
-import { getAllOutletSlugs } from "@/app/_repository/outlets";
-import DashboardOutletClient from "./DashboardOutletClient";
+import { getAllOutletSlugs } from '@/lib/data/outlets';
+import DashboardOutletClient from './DashboardOutletClient';
 
 export async function generateStaticParams() {
 	const slugs = getAllOutletSlugs();
 	return slugs.map((slug) => ({
-		slug,
+		outletName: slug,
 	}));
 }
 
