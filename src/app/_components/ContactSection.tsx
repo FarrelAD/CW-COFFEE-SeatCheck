@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Headphones } from 'lucide-react';
+import Link from "next/link";
+import { Headphones } from "lucide-react";
 
 export default function ContactSection({
-	title = 'Contact',
+	title = "Contact",
 	subtitle = "with us if You've Any Questions",
-	supportText = '24/7 Everyday Free Support!',
-	buttonText = 'Contact',
-	buttonLink = '/contact',
-	className = '',
+	supportText = "24/7 Everyday Free Support!",
+	buttonText = "Contact",
+	buttonLink = "/contact",
+	className = "",
 }: {
 	title?: string;
 	subtitle?: string;
@@ -22,7 +22,7 @@ export default function ContactSection({
 		<section className={`py-12 px-4 ${className}`}>
 			<div
 				className="container mx-auto max-w-4xl relative overflow-hidden rounded-3xl bg-cover bg-center bg-no-repeat py-12 px-6"
-				style={{ backgroundImage: 'url(/doodle-cafe.png)' }}
+				style={{ backgroundImage: "url(/doodle-cafe.png)" }}
 			>
 				<div className="flex flex-col md:flex-row items-center justify-between gap-6">
 					{/* Left side - Heading and Icon */}

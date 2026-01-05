@@ -1,5 +1,5 @@
-import { getAllOutletSlugs } from '@/lib/data/outlets';
-import DashboardOutletClient from './DashboardOutletClient';
+import { getAllOutletSlugs } from "@/lib/data/outlets";
+import DashboardOutletClient from "./DashboardOutletClient";
 
 export async function generateStaticParams() {
 	const slugs = getAllOutletSlugs();

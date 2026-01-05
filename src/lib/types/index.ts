@@ -4,12 +4,63 @@
  */
 
 // ============================================================================
+// News Types
+// ============================================================================
+
+export interface NewsItem {
+	id: number;
+	imageUrl: string;
+	title: string;
+	excerpt: string;
+	link: string;
+}
+
+// ============================================================================
+// Outlet Types
+// ============================================================================
+
+export interface Outlet {
+	id: number;
+	title: string;
+	address: string;
+	imageUrl: string;
+	slug: string;
+}
+
+// ============================================================================
+// Product Types
+// ============================================================================
+
+export interface Product {
+	id: number;
+	imageUrl: string;
+	title: string;
+	link?: string;
+}
+
+export interface ProductCategory {
+	name: string;
+	products: Product[];
+}
+
+// ============================================================================
+// Promo Types
+// ============================================================================
+
+export interface PromoSlide {
+	id: number;
+	imageUrl: string;
+	alt: string;
+	link?: string;
+}
+
+// ============================================================================
 // Seat & Block Types
 // ============================================================================
 
-export type BlockStatus = 'available' | 'used' | 'reserved';
-export type BlockType = 'chair' | 'table' | 'walkway';
-export type BlockFace = 'right' | 'left' | 'down' | 'up';
+export type BlockStatus = "available" | "used" | "reserved";
+export type BlockType = "chair" | "table" | "walkway";
+export type BlockFace = "right" | "left" | "down" | "up";
 
 export interface Block {
 	id: string;

@@ -1,11 +1,15 @@
-'use client';
+"use client";
 
-import { X, Camera } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
-import SuccessCheckinModal from './SuccessCheckinModal';
+import { X, Camera } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
+import SuccessCheckinModal from "./SuccessCheckinModal";
 
-export default function QRScannerModal({ isOpen, onClose, onScan }: {
+export default function QRScannerModal({
+	isOpen,
+	onClose,
+	onScan,
+}: {
 	isOpen: boolean;
 	onClose: () => void;
 	onScan?: (data: string) => void;
@@ -31,12 +35,12 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 
 			// Check if mediaDevices is supported
 			if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-				throw new Error('Camera access is not supported in this browser.');
+				throw new Error("Camera access is not supported in this browser.");
 			}
 
 			// Request camera permission
 			const stream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: 'environment' } // Use back camera on mobile
+				video: { facingMode: "environment" }, // Use back camera on mobile
 			});
 
 			if (videoRef.current) {
@@ -52,25 +56,50 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 				scanQRCode();
 			}
 		} catch (err: any) {
-			console.error('Camera access error:', err);
+			console.error("Camera access error:", err);
 			setIsScanning(false);
 			isScanningRef.current = false; // Update ref
 
 			// Handle specific error types
-			if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-				setError('Camera permission denied. Please allow camera access in your browser settings and try again.');
-			} else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-				setError('No camera found on this device. Please ensure your device has a camera.');
-			} else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-				setError('Camera is already in use by another application. Please close other apps using the camera.');
-			} else if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
-				setError('Camera does not meet requirements. Trying with default camera...');
+			if (
+				err.name === "NotAllowedError" ||
+				err.name === "PermissionDeniedError"
+			) {
+				setError(
+					"Camera permission denied. Please allow camera access in your browser settings and try again."
+				);
+			} else if (
+				err.name === "NotFoundError" ||
+				err.name === "DevicesNotFoundError"
+			) {
+				setError(
+					"No camera found on this device. Please ensure your device has a camera."
+				);
+			} else if (
+				err.name === "NotReadableError" ||
+				err.name === "TrackStartError"
+			) {
+				setError(
+					"Camera is already in use by another application. Please close other apps using the camera."
+				);
+			} else if (
+				err.name === "OverconstrainedError" ||
+				err.name === "ConstraintNotSatisfiedError"
+			) {
+				setError(
+					"Camera does not meet requirements. Trying with default camera..."
+				);
 				// Retry with default camera settings
 				setTimeout(() => retryWithDefaultCamera(), 1000);
-			} else if (err.name === 'SecurityError') {
-				setError('Camera access blocked due to security settings. Please use HTTPS or check browser settings.');
+			} else if (err.name === "SecurityError") {
+				setError(
+					"Camera access blocked due to security settings. Please use HTTPS or check browser settings."
+				);
 			} else {
-				setError(err.message || 'Unable to access camera. Please check your browser permissions and try again.');
+				setError(
+					err.message ||
+						"Unable to access camera. Please check your browser permissions and try again."
+				);
 			}
 		}
 	};
@@ -109,7 +138,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 	 */
 	const handleQRCodeError = (err: any) => {
 		if (!(err instanceof NotFoundException)) {
-			console.error('QR Scan error:', err);
+			console.error("QR Scan error:", err);
 		}
 		continueScanning();
 	};
@@ -120,11 +149,11 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 	const processVideoFrame = (video: HTMLVideoElement) => {
 		// Create canvas if needed
 		if (!canvasRef.current) {
-			canvasRef.current = document.createElement('canvas');
+			canvasRef.current = document.createElement("canvas");
 		}
 
 		const canvas = canvasRef.current;
-		const context = canvas.getContext('2d');
+		const context = canvas.getContext("2d");
 
 		if (!context) return;
 
@@ -168,7 +197,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		try {
 			processVideoFrame(video);
 		} catch (err) {
-			console.error('Scan frame error:', err);
+			console.error("Scan frame error:", err);
 			continueScanning();
 		}
 	};
@@ -183,7 +212,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 			isScanningRef.current = true; // Set ref synchronously
 
 			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true // Use default camera
+				video: true, // Use default camera
 			});
 
 			if (videoRef.current) {
@@ -198,10 +227,12 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 				scanQRCode();
 			}
 		} catch (err: any) {
-			console.error('Retry camera access error:', err);
+			console.error("Retry camera access error:", err);
 			setIsScanning(false);
 			isScanningRef.current = false; // Update ref
-			setError('Failed to access camera. Please check your permissions and try again.');
+			setError(
+				"Failed to access camera. Please check your permissions and try again."
+			);
 		}
 	};
 
@@ -218,7 +249,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		// Stop camera stream
 		if (videoRef.current && videoRef.current.srcObject) {
 			const stream = videoRef.current.srcObject as MediaStream;
-			stream.getTracks().forEach(track => track.stop());
+			stream.getTracks().forEach((track) => track.stop());
 			videoRef.current.srcObject = null;
 		}
 
@@ -245,17 +276,17 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 		 * Close modal on ESC key press
 		 */
 		const handleEscape = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') handleClose();
+			if (e.key === "Escape") handleClose();
 		};
 
 		if (isOpen) {
-			document.addEventListener('keydown', handleEscape);
-			document.body.style.overflow = 'hidden';
+			document.addEventListener("keydown", handleEscape);
+			document.body.style.overflow = "hidden";
 		}
 
 		return () => {
-			document.removeEventListener('keydown', handleEscape);
-			document.body.style.overflow = 'unset';
+			document.removeEventListener("keydown", handleEscape);
+			document.body.style.overflow = "unset";
 		};
 	}, [isOpen]);
 
@@ -313,10 +344,7 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 							{isScanning && (
 								<div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-0 pointer-events-none">
 									{Array.from({ length: 16 }).map((_, i) => (
-										<div
-											key={i}
-											className="border border-yellow-400/30"
-										/>
+										<div key={i} className="border border-yellow-400/30" />
 									))}
 								</div>
 							)}
@@ -364,23 +392,33 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 						<button
 							onClick={isScanning ? stopScanning : startScanning}
 							disabled={!!scannedData}
-							className={`w-20 h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg ring-4 ${isScanning
-								? 'bg-red-600 hover:bg-red-700 ring-red-400/30'
-								: scannedData
-									? 'bg-green-600 ring-green-400/30 cursor-not-allowed'
-									: 'bg-midnight-blue hover:bg-[#082050] ring-yellow-400/30'
-								}`}
+							className={`w-20 h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg ring-4 ${
+								isScanning
+									? "bg-red-600 hover:bg-red-700 ring-red-400/30"
+									: scannedData
+										? "bg-green-600 ring-green-400/30 cursor-not-allowed"
+										: "bg-midnight-blue hover:bg-[#082050] ring-yellow-400/30"
+							}`}
 						>
-							<div className={`w-12 h-12 rounded-full ${isScanning ? 'bg-red-700' : scannedData ? 'bg-green-700' : 'bg-midnight-blue'
-								}`} />
+							<div
+								className={`w-12 h-12 rounded-full ${
+									isScanning
+										? "bg-red-700"
+										: scannedData
+											? "bg-green-700"
+											: "bg-midnight-blue"
+								}`}
+							/>
 						</button>
 					</div>
 
 					{/* Instructions */}
 					<div className="text-center mt-4 text-sm text-gray-600">
-						{!isScanning && !scannedData && 'Click the button to start scanning'}
-						{isScanning && 'Point camera at QR code'}
-						{scannedData && 'QR code scanned successfully!'}
+						{!isScanning &&
+							!scannedData &&
+							"Click the button to start scanning"}
+						{isScanning && "Point camera at QR code"}
+						{scannedData && "QR code scanned successfully!"}
 					</div>
 				</div>
 			</div>

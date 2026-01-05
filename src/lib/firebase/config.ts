@@ -1,6 +1,6 @@
 /**
  * Firebase Configuration
- * 
+ *
  * This file exports the Firebase configuration object using environment variables.
  * Make sure to set up your .env.local file with the correct Firebase credentials.
  */
@@ -20,12 +20,12 @@ export const firebaseConfig = {
  */
 export function validateFirebaseConfig(): void {
 	const requiredFields = [
-		'apiKey',
-		'authDomain',
-		'projectId',
-		'storageBucket',
-		'messagingSenderId',
-		'appId',
+		"apiKey",
+		"authDomain",
+		"projectId",
+		"storageBucket",
+		"messagingSenderId",
+		"appId",
 	] as const;
 
 	const missingFields = requiredFields.filter(
@@ -34,8 +34,8 @@ export function validateFirebaseConfig(): void {
 
 	if (missingFields.length > 0) {
 		console.warn(
-			`Missing Firebase configuration fields: ${missingFields.join(', ')}. ` +
-			'Please check your .env.local file.'
+			`Missing Firebase configuration fields: ${missingFields.join(", ")}. ` +
+				"Please check your .env.local file."
 		);
 	}
 }

@@ -1,14 +1,20 @@
-'use client';
+"use client";
 
-import { usePathname } from 'next/navigation';
-import Header from './Header';
-import Footer from './Footer';
+import { usePathname } from "next/navigation";
+import Header from "./Header";
+import Footer from "./Footer";
 
-export default function ConditionalLayout({ children }: { children: React.ReactNode }) {
+export default function ConditionalLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	const pathname = usePathname();
 
 	// Check if we're on a dashboard/outlet detail page
-	const isDashboardPage = pathname?.startsWith('/category/outlet/') && pathname !== '/category/outlet';
+	const isDashboardPage =
+		pathname?.startsWith("/category/outlet/") &&
+		pathname !== "/category/outlet";
 
 	if (isDashboardPage) {
 		// Don't render Header and Footer for dashboard pages

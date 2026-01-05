@@ -1,7 +1,7 @@
-import { getOutletBySlug, getAllOutletSlugs } from '@/lib/data/outlets';
-import { getOutletLayout } from '@/lib/data/outlet-layouts';
-import { notFound } from 'next/navigation';
-import CheckingPageClient from './CheckingPageClient';
+import { getOutletBySlug, getAllOutletSlugs } from "@/lib/data/outlets";
+import { getOutletLayout } from "@/lib/data/outlet-layouts";
+import { notFound } from "next/navigation";
+import CheckingPageClient from "./CheckingPageClient";
 
 export async function generateStaticParams() {
 	const slugs = getAllOutletSlugs();

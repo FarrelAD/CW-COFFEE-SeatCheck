@@ -11,8 +11,8 @@ import {
 	get,
 	type Unsubscribe,
 	type DataSnapshot,
-} from 'firebase/database';
-import { getFirebaseDatabase, DB_PATHS } from '@/lib/firebase/database';
+} from "firebase/database";
+import { getFirebaseDatabase, DB_PATHS } from "@/lib/firebase/database";
 import type {
 	OutletSeatData,
 	ZoneSeatData,
@@ -20,7 +20,7 @@ import type {
 	BlockStatus,
 	OutletCapacityData,
 	CapacityInfo,
-} from '@/lib/types';
+} from "@/lib/types";
 
 /**
  * Subscribe to all seat data for an outlet
@@ -143,7 +143,7 @@ export function calculateCapacity(seatData: ZoneSeatData | null): CapacityInfo {
 
 	const seats = Object.values(seatData);
 	const total = seats.length;
-	const used = seats.filter((seat) => seat.status === 'used').length;
+	const used = seats.filter((seat) => seat.status === "used").length;
 	const available = total - used;
 
 	return { total, used, available };
@@ -164,7 +164,7 @@ export async function initializeZoneSeats(
 	const initialData: ZoneSeatData = {};
 	seatIds.forEach((seatId) => {
 		initialData[seatId] = {
-			status: 'available',
+			status: "available",
 			updatedAt: Date.now(),
 		};
 	});

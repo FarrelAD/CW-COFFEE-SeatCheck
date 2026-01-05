@@ -3,17 +3,22 @@
  * Script to populate Firebase Realtime Database with initial seat data
  */
 
-import { ref, set } from 'firebase/database';
-import { getFirebaseDatabase } from '@/lib/firebase/database';
-import { outlets } from '@/lib/data/outlets';
-import { outletLayouts, parseGridLayout } from '@/lib/data/outlet-layouts';
-import type { OutletSeatData, ZoneSeatData, SeatStatus, GridAreaLayout } from '@/lib/types';
+import { ref, set } from "firebase/database";
+import { getFirebaseDatabase } from "@/lib/firebase/database";
+import { outlets } from "@/lib/data/outlets";
+import { outletLayouts, parseGridLayout } from "@/lib/data/outlet-layouts";
+import type {
+	OutletSeatData,
+	ZoneSeatData,
+	SeatStatus,
+	GridAreaLayout,
+} from "@/lib/types";
 
 /**
  * Generate random seat statuses for testing
  */
-function randomizeSeatStatus(): 'available' | 'used' {
-	return Math.random() > 0.3 ? 'available' : 'used';
+function randomizeSeatStatus(): "available" | "used" {
+	return Math.random() > 0.3 ? "available" : "used";
 }
 
 /**
@@ -40,7 +45,7 @@ export async function seedOutletData(outletId: number): Promise<void> {
 
 		// Create seat data for chairs only
 		blocks
-			.filter((block) => block.type === 'chair')
+			.filter((block) => block.type === "chair")
 			.forEach((block) => {
 				const seatStatus: SeatStatus = {
 					status: block.status || randomizeSeatStatus(),
@@ -64,7 +69,7 @@ export async function seedOutletData(outletId: number): Promise<void> {
  * Seed all outlets
  */
 export async function seedAllOutlets(): Promise<void> {
-	console.log('🌱 Starting to seed Firebase with outlet data...');
+	console.log("🌱 Starting to seed Firebase with outlet data...");
 
 	for (const outlet of outlets) {
 		try {
@@ -74,7 +79,7 @@ export async function seedAllOutlets(): Promise<void> {
 		}
 	}
 
-	console.log('✅ All outlets seeded successfully!');
+	console.log("✅ All outlets seeded successfully!");
 }
 
 /**
@@ -82,13 +87,13 @@ export async function seedAllOutlets(): Promise<void> {
  */
 export async function clearAllSeatData(): Promise<void> {
 	const db = getFirebaseDatabase();
-	const outletsRef = ref(db, 'outlets');
+	const outletsRef = ref(db, "outlets");
 	await set(outletsRef, null);
-	console.log('🗑️  All seat data cleared');
+	console.log("🗑️  All seat data cleared");
 }
 
 // Run this script manually to seed data
-if (typeof window === 'undefined') {
+if (typeof window === "undefined") {
 	// Only run in Node.js environment (not in browser)
-	console.log('Run seedAllOutlets() to populate Firebase with initial data');
+	console.log("Run seedAllOutlets() to populate Firebase with initial data");
 }

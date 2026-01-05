@@ -1,39 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import ProductCard from './cards/ProductCard';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useRef } from "react";
+import ProductCard from "./cards/ProductCard";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ProductCategory } from "@/lib/types";
 
-interface Product {
-	id: number;
-	imageUrl: string;
-	title: string;
-	link?: string;
-}
-
-interface ProductCategory {
-	name: string;
-	products: Product[];
-}
-
-interface ProductsSectionProps {
+export default function ProductsSection({
+	categories,
+}: {
 	categories: ProductCategory[];
-}
-
-export default function ProductsSection({ categories }: ProductsSectionProps) {
+}) {
 	const [activeTab, setActiveTab] = useState(0);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-	const scroll = (direction: 'left' | 'right') => {
+	const scroll = (direction: "left" | "right") => {
 		if (scrollContainerRef.current) {
 			const scrollAmount = 280; // card width + gap
 			const newScrollLeft =
 				scrollContainerRef.current.scrollLeft +
-				(direction === 'right' ? scrollAmount : -scrollAmount);
+				(direction === "right" ? scrollAmount : -scrollAmount);
 
 			scrollContainerRef.current.scrollTo({
 				left: newScrollLeft,
-				behavior: 'smooth',
+				behavior: "smooth",
 			});
 		}
 	};
@@ -50,10 +39,11 @@ export default function ProductsSection({ categories }: ProductsSectionProps) {
 					<button
 						key={index}
 						onClick={() => setActiveTab(index)}
-						className={`pb-4 px-4 text-lg font-bold uppercase tracking-wide transition-all duration-300 relative ${activeTab === index
-								? 'text-midnight-blue'
-								: 'text-gray-400 hover:text-gray-600'
-							}`}
+						className={`pb-4 px-4 text-lg font-bold uppercase tracking-wide transition-all duration-300 relative ${
+							activeTab === index
+								? "text-midnight-blue"
+								: "text-gray-400 hover:text-gray-600"
+						}`}
 					>
 						{category.name}
 						{activeTab === index && (
@@ -69,7 +59,7 @@ export default function ProductsSection({ categories }: ProductsSectionProps) {
 				<div
 					ref={scrollContainerRef}
 					className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4"
-					style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+					style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
 				>
 					{currentProducts.map((product) => (
 						<ProductCard
@@ -84,7 +74,7 @@ export default function ProductsSection({ categories }: ProductsSectionProps) {
 				{/* Navigation Arrows - Desktop */}
 				<div className="hidden md:block">
 					<button
-						onClick={() => scroll('left')}
+						onClick={() => scroll("left")}
 						className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors z-10"
 						aria-label="Scroll left"
 					>
@@ -92,7 +82,7 @@ export default function ProductsSection({ categories }: ProductsSectionProps) {
 					</button>
 
 					<button
-						onClick={() => scroll('right')}
+						onClick={() => scroll("right")}
 						className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 flex items-center justify-center bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors z-10"
 						aria-label="Scroll right"
 					>

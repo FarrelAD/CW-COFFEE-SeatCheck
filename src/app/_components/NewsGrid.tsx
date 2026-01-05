@@ -1,23 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { NewsItem } from "@/lib/types";
 
-interface NewsItem {
-	id: number;
-	imageUrl: string;
-	title: string;
-	excerpt: string;
-	link: string;
-}
-
-interface NewsGridProps {
-	newsItems: NewsItem[];
-}
-
-export default function NewsGrid({ newsItems }: NewsGridProps) {
+export default function NewsGrid({ newsItems }: { newsItems: NewsItem[] }) {
 	const [currentSlide, setCurrentSlide] = useState(0);
 
 	if (!newsItems || newsItems.length === 0) return null;
@@ -40,7 +29,10 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 				{/* Left Column - Featured Large Card */}
 				<div className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
 					{/* Image */}
-					<Link href={featuredNews.link} className="block relative aspect-16/10 overflow-hidden">
+					<Link
+						href={featuredNews.link}
+						className="block relative aspect-16/10 overflow-hidden"
+					>
 						<Image
 							src={featuredNews.imageUrl}
 							alt={featuredNews.title}
@@ -53,7 +45,10 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 					{/* Content */}
 					<div className="p-6">
 						<h3 className="text-2xl font-black text-midnight-blue mb-3 line-clamp-2">
-							<Link href={featuredNews.link} className="hover:text-yellow-600 transition-colors">
+							<Link
+								href={featuredNews.link}
+								className="hover:text-yellow-600 transition-colors"
+							>
 								{featuredNews.title}
 							</Link>
 						</h3>
@@ -79,7 +74,10 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 							key={news.id}
 							className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
 						>
-							<Link href={news.link} className="block relative aspect-16/10 overflow-hidden">
+							<Link
+								href={news.link}
+								className="block relative aspect-16/10 overflow-hidden"
+							>
 								<Image
 									src={news.imageUrl}
 									alt={news.title}
@@ -91,9 +89,7 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 
 							<div className="p-4">
 								<h3 className="text-base font-black text-midnight-blue mb-2 line-clamp-2 hover:text-yellow-600 transition-colors">
-									<Link href={news.link}>
-										{news.title}
-									</Link>
+									<Link href={news.link}>{news.title}</Link>
 								</h3>
 
 								<p className="text-gray-600 text-xs font-semibold line-clamp-2 leading-relaxed">
@@ -116,7 +112,10 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 						{newsItems.map((news) => (
 							<div key={news.id} className="min-w-full">
 								<div className="bg-white rounded-2xl overflow-hidden shadow-md mx-2">
-									<Link href={news.link} className="block relative aspect-16/10 overflow-hidden">
+									<Link
+										href={news.link}
+										className="block relative aspect-16/10 overflow-hidden"
+									>
 										<Image
 											src={news.imageUrl}
 											alt={news.title}
@@ -128,7 +127,10 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 
 									<div className="p-6">
 										<h3 className="text-xl font-black text-midnight-blue mb-3 line-clamp-2">
-											<Link href={news.link} className="hover:text-yellow-600 transition-colors">
+											<Link
+												href={news.link}
+												className="hover:text-yellow-600 transition-colors"
+											>
 												{news.title}
 											</Link>
 										</h3>
@@ -173,10 +175,11 @@ export default function NewsGrid({ newsItems }: NewsGridProps) {
 						<button
 							key={index}
 							onClick={() => setCurrentSlide(index)}
-							className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide
-									? 'bg-midnight-blue w-8'
-									: 'bg-gray-300 hover:bg-gray-400'
-								}`}
+							className={`w-2 h-2 rounded-full transition-all duration-300 ${
+								index === currentSlide
+									? "bg-midnight-blue w-8"
+									: "bg-gray-300 hover:bg-gray-400"
+							}`}
 							aria-label={`Go to news ${index + 1}`}
 						/>
 					))}

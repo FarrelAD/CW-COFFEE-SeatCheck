@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { QrCode } from 'lucide-react';
-import QRScannerModal from './QRScannerModal';
+import { QrCode } from "lucide-react";
+import QRScannerModal from "./QRScannerModal";
 
 export default function DashboardOutletHeader() {
 	const params = useParams();
@@ -71,7 +71,7 @@ export default function DashboardOutletHeader() {
 				isOpen={isQRModalOpen}
 				onClose={() => setIsQRModalOpen(false)}
 				onScan={(data) => {
-					console.log('QR Code scanned:', data);
+					console.log("QR Code scanned:", data);
 					// You can add your custom logic here
 					// For example, navigate to a page, show a toast, etc.
 					alert(`QR Code scanned: ${data}`);

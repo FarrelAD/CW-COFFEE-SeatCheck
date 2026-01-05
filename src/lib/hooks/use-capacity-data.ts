@@ -3,11 +3,11 @@
  * React hook for subscribing to real-time capacity data
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { subscribeToOutletCapacity } from '@/lib/services/seat-service';
-import type { OutletCapacityData, ZoneCapacity } from '@/lib/types';
+import { useState, useEffect } from "react";
+import { subscribeToOutletCapacity } from "@/lib/services/seat-service";
+import type { OutletCapacityData, ZoneCapacity } from "@/lib/types";
 
 /**
  * Subscribe to real-time capacity data for an outlet
@@ -43,7 +43,7 @@ export function useCapacityData(outletId: number): {
 				unsubscribe();
 			};
 		} catch (err) {
-			setError(err instanceof Error ? err : new Error('Unknown error'));
+			setError(err instanceof Error ? err : new Error("Unknown error"));
 			setLoading(false);
 		}
 	}, [outletId]);

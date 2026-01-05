@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function DashboardOutletClient() {
 	const router = useRouter();
@@ -24,7 +24,7 @@ export default function DashboardOutletClient() {
 					<p className="text-white/90 text-sm mb-4 max-w-[200px]">
 						Silakan baca terlebih dahulu untuk pemakaian Sistem ini
 					</p>
-					<button className="bg-white text-[#0a2463] font-bold px-6 py-2.5 rounded-lg hover:bg-gray-100 transition-colors">
+					<button className="bg-white text-midnight-blue font-bold px-6 py-2.5 rounded-lg hover:bg-gray-100 transition-colors">
 						Readme
 					</button>
 				</div>

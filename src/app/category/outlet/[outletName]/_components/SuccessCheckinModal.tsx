@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import Image from 'next/image';
+import { X } from "lucide-react";
+import Image from "next/image";
 
-interface SuccessCheckinModalProps {
+export default function SuccessCheckinModal({
+	isOpen,
+	onClose,
+}: {
 	isOpen: boolean;
 	onClose: () => void;
-}
-
-export default function SuccessCheckinModal({ isOpen, onClose }: SuccessCheckinModalProps) {
+}) {
 	if (!isOpen) return null;
 
 	return (
@@ -48,7 +49,9 @@ export default function SuccessCheckinModal({ isOpen, onClose }: SuccessCheckinM
 							Berhasil Checkin
 						</h2>
 						<p className="text-gray-400 text-base">
-							Selamat anda bisa menggunakan<br />Meja ini
+							Selamat anda bisa menggunakan
+							<br />
+							Meja ini
 						</p>
 					</div>
 
