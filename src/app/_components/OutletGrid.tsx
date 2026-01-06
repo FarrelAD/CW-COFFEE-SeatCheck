@@ -1,22 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import OutletCard from './cards/OutletCard';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from "react";
+import OutletCard from "./cards/OutletCard";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Outlet } from "@/lib/types";
 
-interface Outlet {
-	id: number;
-	title: string;
-	address: string;
-	imageUrl: string;
-	slug: string;
-}
-
-interface OutletGridProps {
-	outlets: Outlet[];
-}
-
-export default function OutletGrid({ outlets }: OutletGridProps) {
+export default function OutletGrid({ outlets }: { outlets: Outlet[] }) {
 	const [currentSlide, setCurrentSlide] = useState(0);
 
 	if (!outlets || outlets.length === 0) return null;
@@ -118,10 +107,11 @@ export default function OutletGrid({ outlets }: OutletGridProps) {
 						<button
 							key={index}
 							onClick={() => setCurrentSlide(index)}
-							className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentSlide
-									? 'bg-midnight-blue w-8'
-									: 'bg-gray-300 hover:bg-gray-400'
-								}`}
+							className={`w-2 h-2 rounded-full transition-all duration-300 ${
+								index === currentSlide
+									? "bg-midnight-blue w-8"
+									: "bg-gray-300 hover:bg-gray-400"
+							}`}
 							aria-label={`Go to outlet ${index + 1}`}
 						/>
 					))}

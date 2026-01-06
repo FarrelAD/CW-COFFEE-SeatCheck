@@ -1,12 +1,12 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function NewsCard({
 	imageUrl,
 	title,
 	excerpt,
 	link,
-	imageAlt = '',
+	imageAlt = "",
 }: {
 	imageUrl: string;
 	title: string;
@@ -31,9 +31,7 @@ export default function NewsCard({
 			<div className="p-6">
 				{/* Title */}
 				<h3 className="text-xl font-black text-midnight-blue mb-3 line-clamp-2 group-hover:text-yellow-600 transition-colors">
-					<Link href={link}>
-						{title}
-					</Link>
+					<Link href={link}>{title}</Link>
 				</h3>
 
 				{/* Excerpt */}

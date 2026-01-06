@@ -1,233 +1,118 @@
-'use client';
+"use client";
 
-import { X, Camera } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
-import SuccessCheckinModal from './SuccessCheckinModal';
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useCamera } from "./hooks/useCamera";
+import { useQRScanner } from "./hooks/useQRScanner";
+import { useCheckIn } from "@/lib/hooks/use-checkin";
+import { parseSeatQRData } from "@/lib/utils/qr-utils";
+import ScannerFrame from "./ScannerFrame";
+import ScannerControls from "./ScannerControls";
+import ScannerInstructions from "./ScannerInstructions";
+import type { CheckInRecord } from "@/lib/types";
 
-export default function QRScannerModal({ isOpen, onClose, onScan }: {
+export default function QRScannerModal({
+	isOpen,
+	onClose,
+	onSuccess,
+}: {
 	isOpen: boolean;
 	onClose: () => void;
-	onScan?: (data: string) => void;
+	onSuccess?: (record: CheckInRecord) => void;
 }) {
-	const videoRef = useRef<HTMLVideoElement>(null);
-	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [isScanning, setIsScanning] = useState(false);
-	const isScanningRef = useRef(false); // Track scanning state synchronously
-	const [scannedData, setScannedData] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null);
-	const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
-	const animationFrameRef = useRef<number | null>(null);
-	const [showSuccessModal, setShowSuccessModal] = useState(false);
+	const [scanError, setScanError] = useState<string | null>(null);
 
-	/**
-	 * Initialize camera and start scanning
-	 */
-	const startScanning = async () => {
-		try {
-			setError(null);
-			setIsScanning(true);
-			isScanningRef.current = true; // Set ref synchronously
+	// Camera management
+	const { videoRef, error: cameraError, startCamera, stopCamera } = useCamera();
 
-			// Check if mediaDevices is supported
-			if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-				throw new Error('Camera access is not supported in this browser.');
-			}
+	// Check-in management
+	const {
+		checkIn,
+		loading: checkInLoading,
+		error: checkInError,
+	} = useCheckIn();
 
-			// Request camera permission
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: 'environment' } // Use back camera on mobile
-			});
-
-			if (videoRef.current) {
-				videoRef.current.srcObject = stream;
-				await videoRef.current.play();
-
-				// Initialize QR code reader
-				if (!codeReaderRef.current) {
-					codeReaderRef.current = new BrowserMultiFormatReader();
-				}
-
-				// Start scanning loop
-				scanQRCode();
-			}
-		} catch (err: any) {
-			console.error('Camera access error:', err);
-			setIsScanning(false);
-			isScanningRef.current = false; // Update ref
-
-			// Handle specific error types
-			if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-				setError('Camera permission denied. Please allow camera access in your browser settings and try again.');
-			} else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-				setError('No camera found on this device. Please ensure your device has a camera.');
-			} else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-				setError('Camera is already in use by another application. Please close other apps using the camera.');
-			} else if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
-				setError('Camera does not meet requirements. Trying with default camera...');
-				// Retry with default camera settings
-				setTimeout(() => retryWithDefaultCamera(), 1000);
-			} else if (err.name === 'SecurityError') {
-				setError('Camera access blocked due to security settings. Please use HTTPS or check browser settings.');
-			} else {
-				setError(err.message || 'Unable to access camera. Please check your browser permissions and try again.');
-			}
-		}
-	};
-
-	/**
-	 * Continue scanning on next animation frame
-	 */
-	const continueScanning = () => {
-		if (isScanningRef.current) {
-			animationFrameRef.current = requestAnimationFrame(scanQRCode);
-		}
-	};
-
-	/**
-	 * Handle QR code scan result
-	 */
-	const handleQRCodeResult = (result: any) => {
-		if (!result) {
-			continueScanning();
-			return;
-		}
-
-		const data = result.getText();
-		setScannedData(data);
-
-		if (onScan) {
-			onScan(data);
-		}
-
+	// QR Scanner management
+	const {
+		isScanning,
+		scannedData,
+		startScanning,
+		stopScanning,
+		resetScannedData,
+	} = useQRScanner(async (data) => {
+		// Stop scanning and camera
 		stopScanning();
-		setShowSuccessModal(true);
-	};
+		stopCamera();
+		setScanError(null);
 
-	/**
-	 * Handle QR code scan error
-	 */
-	const handleQRCodeError = (err: any) => {
-		if (!(err instanceof NotFoundException)) {
-			console.error('QR Scan error:', err);
-		}
-		continueScanning();
-	};
-
-	/**
-	 * Process video frame and attempt to decode QR code
-	 */
-	const processVideoFrame = (video: HTMLVideoElement) => {
-		// Create canvas if needed
-		if (!canvasRef.current) {
-			canvasRef.current = document.createElement('canvas');
-		}
-
-		const canvas = canvasRef.current;
-		const context = canvas.getContext('2d');
-
-		if (!context) return;
-
-		// Capture video frame to canvas
-		canvas.width = video.videoWidth;
-		canvas.height = video.videoHeight;
-		context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-		// Convert canvas to image
-		const img = new Image();
-		img.src = canvas.toDataURL();
-
-		img.onload = () => {
-			if (!codeReaderRef.current) return;
-
-			codeReaderRef.current
-				.decodeFromImage(img)
-				.then(handleQRCodeResult)
-				.catch(handleQRCodeError);
-		};
-	};
-
-	/**
-	 * Scan QR code using requestAnimationFrame
-	 */
-	const scanQRCode = () => {
-		// Early return if not ready
-		if (!videoRef.current || !codeReaderRef.current || !isScanningRef.current) {
-			return;
-		}
-
-		const video = videoRef.current;
-
-		// Wait for video to be ready
-		if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-			continueScanning();
-			return;
-		}
-
-		// Process the video frame
 		try {
-			processVideoFrame(video);
-		} catch (err) {
-			console.error('Scan frame error:', err);
-			continueScanning();
-		}
-	};
+			// Parse QR data
+			const qrData = parseSeatQRData(data);
+			console.log("QR Data:", qrData);
 
-	/**
-	 * Retry with default camera settings (fallback)
-	 */
-	const retryWithDefaultCamera = async () => {
-		try {
-			setError(null);
-			setIsScanning(true);
-			isScanningRef.current = true; // Set ref synchronously
-
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true // Use default camera
-			});
-
-			if (videoRef.current) {
-				videoRef.current.srcObject = stream;
-				await videoRef.current.play();
-
-				if (!codeReaderRef.current) {
-					codeReaderRef.current = new BrowserMultiFormatReader();
-				}
-
-				// Start scanning loop
-				scanQRCode();
+			if (!qrData) {
+				setScanError("Invalid QR code. Please scan a valid seat QR code.");
+				// Restart camera for retry
+				setTimeout(async () => {
+					await startCamera();
+					if (videoRef.current) {
+						startScanning(videoRef.current);
+					}
+				}, 2000);
+				return;
 			}
-		} catch (err: any) {
-			console.error('Retry camera access error:', err);
-			setIsScanning(false);
-			isScanningRef.current = false; // Update ref
-			setError('Failed to access camera. Please check your permissions and try again.');
+
+			console.log("Performing check-in...");
+
+			// Perform check-in
+			const record = await checkIn(qrData);
+
+			// Call success callback
+			if (onSuccess) {
+				console.log("Check-in successful. Record:", record);
+				onSuccess(record);
+			} else {
+				console.log("No success callback provided.");
+			}
+		} catch (err) {
+			console.error("Check-in error:", err);
+			const errorMessage =
+				err instanceof Error ? err.message : "Failed to check in";
+			setScanError(errorMessage);
+
+			// Restart camera for retry after error
+			setTimeout(async () => {
+				await startCamera();
+				if (videoRef.current) {
+					startScanning(videoRef.current);
+				}
+			}, 2000);
+		}
+	});
+
+	/**
+	 * Handle scan button toggle
+	 */
+	const handleToggleScan = async () => {
+		if (isScanning) {
+			stopScanning();
+			stopCamera();
+		} else {
+			await startCamera();
+			if (videoRef.current) {
+				startScanning(videoRef.current);
+			}
 		}
 	};
 
 	/**
-	 * Stop scanning and release camera
+	 * Handle retry after error
 	 */
-	const stopScanning = () => {
-		// Cancel animation frame
-		if (animationFrameRef.current) {
-			cancelAnimationFrame(animationFrameRef.current);
-			animationFrameRef.current = null;
+	const handleRetry = async () => {
+		await startCamera();
+		if (videoRef.current) {
+			startScanning(videoRef.current);
 		}
-
-		// Stop camera stream
-		if (videoRef.current && videoRef.current.srcObject) {
-			const stream = videoRef.current.srcObject as MediaStream;
-			stream.getTracks().forEach(track => track.stop());
-			videoRef.current.srcObject = null;
-		}
-
-		// Reset code reader
-		if (codeReaderRef.current) {
-			codeReaderRef.current.reset();
-		}
-		setIsScanning(false);
-		isScanningRef.current = false; // Update ref
 	};
 
 	/**
@@ -235,36 +120,37 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 	 */
 	const handleClose = () => {
 		stopScanning();
-		setScannedData(null);
-		setError(null);
+		stopCamera();
+		resetScannedData();
 		onClose();
 	};
 
+	/**
+	 * Handle escape key press
+	 */
 	useEffect(() => {
-		/**
-		 * Close modal on ESC key press
-		 */
 		const handleEscape = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') handleClose();
+			if (e.key === "Escape") handleClose();
 		};
 
 		if (isOpen) {
-			document.addEventListener('keydown', handleEscape);
-			document.body.style.overflow = 'hidden';
+			document.addEventListener("keydown", handleEscape);
+			document.body.style.overflow = "hidden";
 		}
 
 		return () => {
-			document.removeEventListener('keydown', handleEscape);
-			document.body.style.overflow = 'unset';
+			document.removeEventListener("keydown", handleEscape);
+			document.body.style.overflow = "unset";
 		};
 	}, [isOpen]);
 
+	/**
+	 * Cleanup on unmount
+	 */
 	useEffect(() => {
-		/**
-		 * Cleanup on unmount
-		 */
 		return () => {
 			stopScanning();
+			stopCamera();
 		};
 	}, []);
 
@@ -298,102 +184,27 @@ export default function QRScannerModal({ isOpen, onClose, onScan }: {
 					</div>
 
 					{/* QR Code Scanner Area */}
-					<div className="mb-8">
-						{/* Camera/Scanner Frame */}
-						<div className="relative aspect-square bg-black rounded-3xl overflow-hidden border-4 border-yellow-400">
-							{/* Video Element */}
-							<video
-								ref={videoRef}
-								className="w-full h-full object-cover"
-								playsInline
-								muted
-							/>
-
-							{/* Grid Overlay */}
-							{isScanning && (
-								<div className="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-0 pointer-events-none">
-									{Array.from({ length: 16 }).map((_, i) => (
-										<div
-											key={i}
-											className="border border-yellow-400/30"
-										/>
-									))}
-								</div>
-							)}
-
-							{/* Placeholder when not scanning */}
-							{!isScanning && !scannedData && (
-								<div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-									<Camera className="w-16 h-16 text-gray-400" />
-								</div>
-							)}
-
-							{/* Success Message */}
-							{scannedData && (
-								<div className="absolute inset-0 flex items-center justify-center bg-green-600/90">
-									<div className="text-center text-white p-4">
-										<div className="text-2xl font-bold mb-2">✓ Scanned!</div>
-										<div className="text-sm break-all">{scannedData}</div>
-									</div>
-								</div>
-							)}
-
-							{/* Error Message */}
-							{error && (
-								<div className="absolute inset-0 flex items-center justify-center bg-red-600/90">
-									<div className="text-center text-white p-4">
-										<div className="text-lg font-bold mb-2">⚠️ Error</div>
-										<div className="text-sm mb-4">{error}</div>
-										<button
-											onClick={() => {
-												setError(null);
-												startScanning();
-											}}
-											className="bg-white text-red-600 font-bold px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-										>
-											Try Again
-										</button>
-									</div>
-								</div>
-							)}
-						</div>
-					</div>
+					<ScannerFrame
+						videoRef={videoRef}
+						isScanning={isScanning}
+						error={cameraError || scanError || checkInError}
+						onRetry={handleRetry}
+					/>
 
 					{/* Scan Button */}
-					<div className="flex justify-center">
-						<button
-							onClick={isScanning ? stopScanning : startScanning}
-							disabled={!!scannedData}
-							className={`w-20 h-20 rounded-full flex items-center justify-center transition-all hover:scale-105 shadow-lg ring-4 ${isScanning
-								? 'bg-red-600 hover:bg-red-700 ring-red-400/30'
-								: scannedData
-									? 'bg-green-600 ring-green-400/30 cursor-not-allowed'
-									: 'bg-midnight-blue hover:bg-[#082050] ring-yellow-400/30'
-								}`}
-						>
-							<div className={`w-12 h-12 rounded-full ${isScanning ? 'bg-red-700' : scannedData ? 'bg-green-700' : 'bg-midnight-blue'
-								}`} />
-						</button>
-					</div>
+					<ScannerControls
+						isScanning={isScanning || checkInLoading}
+						scannedData={scannedData}
+						onToggleScan={handleToggleScan}
+					/>
 
 					{/* Instructions */}
-					<div className="text-center mt-4 text-sm text-gray-600">
-						{!isScanning && !scannedData && 'Click the button to start scanning'}
-						{isScanning && 'Point camera at QR code'}
-						{scannedData && 'QR code scanned successfully!'}
-					</div>
+					<ScannerInstructions
+						isScanning={isScanning}
+						scannedData={scannedData}
+					/>
 				</div>
 			</div>
-
-			{/* Success Check-in Modal */}
-			<SuccessCheckinModal
-				isOpen={showSuccessModal}
-				onClose={() => {
-					setShowSuccessModal(false);
-					setScannedData(null);
-					onClose();
-				}}
-			/>
 		</>
 	);
 }

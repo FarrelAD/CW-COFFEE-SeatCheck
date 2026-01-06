@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import OutletCard from "@/app/_components/cards/OutletCard";
 import { outlets } from "@/lib/data/outlets";
@@ -19,7 +19,7 @@ export default function Outlet() {
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page);
 		// Scroll to top of outlet section
-		window.scrollTo({ top: 0, behavior: 'smooth' });
+		window.scrollTo({ top: 0, behavior: "smooth" });
 	};
 
 	return (
@@ -79,10 +79,11 @@ export default function Outlet() {
 							<button
 								onClick={() => handlePageChange(currentPage - 1)}
 								disabled={currentPage === 1}
-								className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${currentPage === 1
-									? 'border-gray-300 text-gray-400 cursor-not-allowed'
-									: 'border-[#1a2b4a] text-[#1a2b4a] hover:bg-[#1a2b4a] hover:text-white'
-									}`}
+								className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
+									currentPage === 1
+										? "border-gray-300 text-gray-400 cursor-not-allowed"
+										: "border-[#1a2b4a] text-[#1a2b4a] hover:bg-[#1a2b4a] hover:text-white"
+								}`}
 								aria-label="Previous page"
 							>
 								<svg
@@ -101,27 +102,31 @@ export default function Outlet() {
 							</button>
 
 							{/* Page Numbers */}
-							{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-								<button
-									key={page}
-									onClick={() => handlePageChange(page)}
-									className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-medium transition-all duration-200 ${currentPage === page
-										? 'bg-[#1a2b4a] text-white border-[#1a2b4a]'
-										: 'border-[#1a2b4a] text-[#1a2b4a] hover:bg-[#1a2b4a] hover:text-white'
+							{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+								(page) => (
+									<button
+										key={page}
+										onClick={() => handlePageChange(page)}
+										className={`w-12 h-12 rounded-full flex items-center justify-center border-2 font-medium transition-all duration-200 ${
+											currentPage === page
+												? "bg-[#1a2b4a] text-white border-[#1a2b4a]"
+												: "border-[#1a2b4a] text-[#1a2b4a] hover:bg-[#1a2b4a] hover:text-white"
 										}`}
-								>
-									{page}
-								</button>
-							))}
+									>
+										{page}
+									</button>
+								)
+							)}
 
 							{/* Next Button */}
 							<button
 								onClick={() => handlePageChange(currentPage + 1)}
 								disabled={currentPage === totalPages}
-								className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${currentPage === totalPages
-									? 'border-gray-300 text-gray-400 cursor-not-allowed'
-									: 'border-[#1a2b4a] text-[#1a2b4a] hover:bg-[#1a2b4a] hover:text-white'
-									}`}
+								className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-200 ${
+									currentPage === totalPages
+										? "border-gray-300 text-gray-400 cursor-not-allowed"
+										: "border-[#1a2b4a] text-[#1a2b4a] hover:bg-[#1a2b4a] hover:text-white"
+								}`}
 								aria-label="Next page"
 							>
 								<svg

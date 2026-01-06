@@ -3,11 +3,11 @@
  * React hook for subscribing to real-time seat data
  */
 
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { subscribeToZoneSeats } from '@/lib/services/seat-service';
-import type { ZoneSeatData } from '@/lib/types';
+import { useState, useEffect } from "react";
+import { subscribeToZoneSeats } from "@/lib/services/seat-service";
+import type { ZoneSeatData } from "@/lib/types";
 
 /**
  * Subscribe to real-time seat data for a specific zone
@@ -29,21 +29,17 @@ export function useSeatData(
 		setError(null);
 
 		try {
-			const unsubscribe = subscribeToZoneSeats(
-				outletId,
-				zoneName,
-				(data) => {
-					setSeatData(data);
-					setLoading(false);
-				}
-			);
+			const unsubscribe = subscribeToZoneSeats(outletId, zoneName, (data) => {
+				setSeatData(data);
+				setLoading(false);
+			});
 
 			// Cleanup subscription on unmount
 			return () => {
 				unsubscribe();
 			};
 		} catch (err) {
-			setError(err instanceof Error ? err : new Error('Unknown error'));
+			setError(err instanceof Error ? err : new Error("Unknown error"));
 			setLoading(false);
 		}
 	}, [outletId, zoneName]);

@@ -7,8 +7,8 @@ const nextConfig: NextConfig = {
 	// basePath: isProd ? "/CW-COFFEE-SeatCheck" : "",
 	// assetPrefix: isProd ? "/CW-COFFEE-SeatCheck" : "",
 	images: {
-    unoptimized: true,
-  },
+		unoptimized: true,
+	},
 };
 
 export default nextConfig;

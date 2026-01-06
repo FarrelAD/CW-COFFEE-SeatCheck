@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -42,4 +42,3 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/gcp-key.json
           FIREBASE_CLI_EXPERIMENTS: webframeworks
-

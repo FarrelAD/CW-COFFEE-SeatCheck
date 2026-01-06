@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function OutletCard({
 	id,
@@ -11,7 +11,7 @@ export default function OutletCard({
 	imageUrl,
 	slug,
 	showReadMore = true,
-	className = '',
+	className = "",
 }: {
 	id: string | number;
 	title: string;
@@ -31,7 +31,10 @@ export default function OutletCard({
 			{/* Image Section - 16:10 Aspect Ratio */}
 			<div className="relative w-full overflow-hidden bg-gray-200">
 				<div className="relative w-full pb-[62.5%] overflow-hidden">
-					<Link href={`/category/outlet/${slug}`} className="absolute top-0 left-0 w-full h-full block">
+					<Link
+						href={`/category/outlet/${slug}`}
+						className="absolute top-0 left-0 w-full h-full block"
+					>
 						{!imageError ? (
 							<Image
 								src={imageUrl}
@@ -56,7 +59,9 @@ export default function OutletCard({
 										d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
 									/>
 								</svg>
-								<p className="text-sm text-gray-500 font-medium">Image not available</p>
+								<p className="text-sm text-gray-500 font-medium">
+									Image not available
+								</p>
 							</div>
 						)}
 					</Link>
@@ -65,10 +70,7 @@ export default function OutletCard({
 
 			{/* Content Section */}
 			<div className="p-6 flex flex-col gap-3 flex-1">
-				<Link
-					className="no-underline group"
-					href={`/category/outlet/${slug}`}
-				>
+				<Link className="no-underline group" href={`/category/outlet/${slug}`}>
 					<h2 className="text-2xl font-bold text-[#1a2b4a] leading-tight transition-colors duration-300 group-hover:text-[#2d4a7c] m-0">
 						{title}
 					</h2>

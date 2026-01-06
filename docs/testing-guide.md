@@ -75,18 +75,18 @@ pnpm e2e:headed
 
 ```typescript
 // __tests__/lib/utils.test.ts
-import { myFunction } from '@/lib/utils';
+import { myFunction } from "@/lib/utils";
 
-describe('myFunction', () => {
-  it('should return expected value', () => {
-    const result = myFunction('input');
-    expect(result).toBe('expected output');
-  });
+describe("myFunction", () => {
+	it("should return expected value", () => {
+		const result = myFunction("input");
+		expect(result).toBe("expected output");
+	});
 
-  it('should handle edge cases', () => {
-    expect(myFunction('')).toBe('');
-    expect(myFunction(null)).toBeNull();
-  });
+	it("should handle edge cases", () => {
+		expect(myFunction("")).toBe("");
+		expect(myFunction(null)).toBeNull();
+	});
 });
 ```
 
@@ -96,13 +96,13 @@ Firebase is mocked globally in `jest.setup.ts`. Example:
 
 ```typescript
 // __tests__/lib/firebase/config.test.ts
-import { firebaseConfig } from '@/lib/firebase/config';
+import { firebaseConfig } from "@/lib/firebase/config";
 
-describe('Firebase Configuration', () => {
-  it('should have required properties', () => {
-    expect(firebaseConfig).toHaveProperty('apiKey');
-    expect(firebaseConfig).toHaveProperty('projectId');
-  });
+describe("Firebase Configuration", () => {
+	it("should have required properties", () => {
+		expect(firebaseConfig).toHaveProperty("apiKey");
+		expect(firebaseConfig).toHaveProperty("projectId");
+	});
 });
 ```
 
@@ -134,9 +134,9 @@ describe('Button', () => {
   it('should call onClick when clicked', async () => {
     const handleClick = jest.fn();
     const user = userEvent.setup();
-    
+
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     await user.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -152,9 +152,9 @@ import AsyncComponent from '@/app/components/AsyncComponent';
 describe('AsyncComponent', () => {
   it('should display loading state then data', async () => {
     render(<AsyncComponent />);
-    
+
     expect(screen.getByText('Loading...')).toBeInTheDocument();
-    
+
     await waitFor(() => {
       expect(screen.getByText('Data loaded')).toBeInTheDocument();
     });
@@ -168,16 +168,16 @@ describe('AsyncComponent', () => {
 
 ```typescript
 // cypress/e2e/navigation.cy.ts
-describe('Navigation', () => {
-  beforeEach(() => {
-    cy.visit('/');
-  });
+describe("Navigation", () => {
+	beforeEach(() => {
+		cy.visit("/");
+	});
 
-  it('should navigate to about page', () => {
-    cy.get('a[href="/about"]').click();
-    cy.url().should('include', '/about');
-    cy.get('h1').should('contain', 'About');
-  });
+	it("should navigate to about page", () => {
+		cy.get('a[href="/about"]').click();
+		cy.url().should("include", "/about");
+		cy.get("h1").should("contain", "About");
+	});
 });
 ```
 
@@ -185,16 +185,16 @@ describe('Navigation', () => {
 
 ```typescript
 // cypress/e2e/custom-commands.cy.ts
-describe('Custom Commands', () => {
-  it('should use visitAndWait command', () => {
-    cy.visitAndWait('/');
-    cy.get('body').should('be.visible');
-  });
+describe("Custom Commands", () => {
+	it("should use visitAndWait command", () => {
+		cy.visitAndWait("/");
+		cy.get("body").should("be.visible");
+	});
 
-  it('should use getByTestId command', () => {
-    cy.visit('/');
-    cy.getByTestId('submit-button').click();
-  });
+	it("should use getByTestId command", () => {
+		cy.visit("/");
+		cy.getByTestId("submit-button").click();
+	});
 });
 ```
 
@@ -202,18 +202,18 @@ describe('Custom Commands', () => {
 
 ```typescript
 // cypress/e2e/contact-form.cy.ts
-describe('Contact Form', () => {
-  it('should submit form successfully', () => {
-    cy.visit('/contact');
-    
-    cy.get('input[name="name"]').type('John Doe');
-    cy.get('input[name="email"]').type('john@example.com');
-    cy.get('textarea[name="message"]').type('Hello!');
-    
-    cy.get('button[type="submit"]').click();
-    
-    cy.get('.success-message').should('be.visible');
-  });
+describe("Contact Form", () => {
+	it("should submit form successfully", () => {
+		cy.visit("/contact");
+
+		cy.get('input[name="name"]').type("John Doe");
+		cy.get('input[name="email"]').type("john@example.com");
+		cy.get('textarea[name="message"]').type("Hello!");
+
+		cy.get('button[type="submit"]').click();
+
+		cy.get(".success-message").should("be.visible");
+	});
 });
 ```
 
@@ -221,18 +221,18 @@ describe('Contact Form', () => {
 
 ```typescript
 // cypress/e2e/responsive.cy.ts
-describe('Responsive Design', () => {
-  it('should work on mobile', () => {
-    cy.viewport('iphone-x');
-    cy.visit('/');
-    cy.get('.mobile-menu').should('be.visible');
-  });
+describe("Responsive Design", () => {
+	it("should work on mobile", () => {
+		cy.viewport("iphone-x");
+		cy.visit("/");
+		cy.get(".mobile-menu").should("be.visible");
+	});
 
-  it('should work on desktop', () => {
-    cy.viewport(1920, 1080);
-    cy.visit('/');
-    cy.get('.desktop-nav').should('be.visible');
-  });
+	it("should work on desktop", () => {
+		cy.viewport(1920, 1080);
+		cy.visit("/");
+		cy.get(".desktop-nav").should("be.visible");
+	});
 });
 ```
 
@@ -251,16 +251,17 @@ describe('Responsive Design', () => {
 ```tsx
 // Component
 export default function Button() {
-  return <button data-testid="submit-button">Submit</button>;
+	return <button data-testid="submit-button">Submit</button>;
 }
 
 // Test
-cy.getByTestId('submit-button').click();
+cy.getByTestId("submit-button").click();
 ```
 
 ### Test Coverage Goals
 
 Aim for:
+
 - **Statements**: 50%+
 - **Branches**: 50%+
 - **Functions**: 50%+
@@ -271,6 +272,7 @@ Adjust thresholds in `jest.config.ts` as needed.
 ### What to Test
 
 **Do Test:**
+
 - ✅ User interactions and flows
 - ✅ Edge cases and error handling
 - ✅ Component rendering with different props
@@ -279,6 +281,7 @@ Adjust thresholds in `jest.config.ts` as needed.
 - ✅ Routing and navigation
 
 **Don't Test:**
+
 - ❌ Third-party libraries (they have their own tests)
 - ❌ Implementation details
 - ❌ Styling (unless critical to functionality)
@@ -290,9 +293,9 @@ Adjust thresholds in `jest.config.ts` as needed.
 Firebase is globally mocked in `jest.setup.ts`:
 
 ```typescript
-jest.mock('firebase/app', () => ({
-  initializeApp: jest.fn(() => ({})),
-  getApps: jest.fn(() => []),
+jest.mock("firebase/app", () => ({
+	initializeApp: jest.fn(() => ({})),
+	getApps: jest.fn(() => []),
 }));
 ```
 
@@ -301,37 +304,37 @@ jest.mock('firebase/app', () => ({
 ```typescript
 // Mock fetch
 global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({ data: 'test' }),
-  })
+	Promise.resolve({
+		json: () => Promise.resolve({ data: "test" }),
+	})
 ) as jest.Mock;
 
 // Test
-it('should fetch data', async () => {
-  const data = await fetchData();
-  expect(data).toEqual({ data: 'test' });
-  expect(fetch).toHaveBeenCalledTimes(1);
+it("should fetch data", async () => {
+	const data = await fetchData();
+	expect(data).toEqual({ data: "test" });
+	expect(fetch).toHaveBeenCalledTimes(1);
 });
 ```
 
 ### Mocking Next.js Router
 
 ```typescript
-jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    pathname: '/',
-  }),
-  usePathname: () => '/',
+jest.mock("next/navigation", () => ({
+	useRouter: () => ({
+		push: jest.fn(),
+		pathname: "/",
+	}),
+	usePathname: () => "/",
 }));
 ```
 
 ### Cypress Network Stubbing
 
 ```typescript
-cy.intercept('GET', '/api/data', { fixture: 'data.json' }).as('getData');
-cy.visit('/');
-cy.wait('@getData');
+cy.intercept("GET", "/api/data", { fixture: "data.json" }).as("getData");
+cy.visit("/");
+cy.wait("@getData");
 ```
 
 ## CI/CD Integration
@@ -346,24 +349,24 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: '20'
-          cache: 'pnpm'
-      
+          node-version: "20"
+          cache: "pnpm"
+
       - name: Install dependencies
         run: pnpm install
-      
+
       - name: Run Jest tests
         run: pnpm test:coverage
-      
+
       - name: Build application
         run: pnpm build
-      
+
       - name: Run Cypress tests
         run: pnpm e2e
 ```
@@ -387,9 +390,9 @@ node --inspect-brk node_modules/.bin/jest --runInBand
 
 ```typescript
 // Add debugger in test
-cy.get('button').click();
+cy.get("button").click();
 cy.debug(); // Pause execution
-cy.get('.result').should('exist');
+cy.get(".result").should("exist");
 
 // Use .pause() for interactive debugging
 cy.pause();
@@ -406,7 +409,7 @@ cy.pause();
 jest.setTimeout(10000);
 
 // Cypress
-cy.get('.slow-element', { timeout: 10000 });
+cy.get(".slow-element", { timeout: 10000 });
 ```
 
 ### Issue: Firebase initialization errors
@@ -415,7 +418,8 @@ cy.get('.slow-element', { timeout: 10000 });
 
 ### Issue: Cypress can't find elements
 
-**Solution**: 
+**Solution**:
+
 - Add `cy.wait()` for dynamic content
 - Use `data-testid` attributes
 - Check element visibility with `.should('be.visible')`

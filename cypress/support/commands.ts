@@ -1,6 +1,6 @@
 /**
  * Cypress Custom Commands
- * 
+ *
  * Add custom commands to extend Cypress functionality.
  * These commands can be used throughout your E2E tests.
  */
@@ -26,13 +26,13 @@ declare global {
 }
 
 // Custom command to visit and wait for page load
-Cypress.Commands.add('visitAndWait', (url: string) => {
+Cypress.Commands.add("visitAndWait", (url: string) => {
 	cy.visit(url);
-	cy.get('body').should('be.visible');
+	cy.get("body").should("be.visible");
 });
 
 // Custom command to get by data-testid
-Cypress.Commands.add('getByTestId', (testId: string) => {
+Cypress.Commands.add("getByTestId", (testId: string) => {
 	return cy.get(`[data-testid="${testId}"]`);
 });
 
@@ -45,4 +45,4 @@ Cypress.Commands.add('getByTestId', (testId: string) => {
 //   cy.url().should('not.include', '/login');
 // });
 
-export { };
+export {};

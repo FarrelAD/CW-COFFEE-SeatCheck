@@ -1,14 +1,8 @@
 {
 	"compilerOptions": {
 		"target": "ES2017",
-		"lib": [
-			"ES2017",
-			"DOM"
-		],
-		"types": [
-			"cypress",
-			"node"
-		],
+		"lib": ["ES2017", "DOM"],
+		"types": ["cypress", "node"],
 		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
@@ -16,16 +10,9 @@
 		"skipLibCheck": true,
 		"baseUrl": "../",
 		"paths": {
-			"@/*": [
-				"./*"
-			]
+			"@/*": ["./*"]
 		}
 	},
-	"include": [
-		"**/*.ts",
-		"**/*.tsx"
-	],
-	"exclude": [
-		"node_modules"
-	]
+	"include": ["**/*.ts", "**/*.tsx"],
+	"exclude": ["node_modules"]
 }

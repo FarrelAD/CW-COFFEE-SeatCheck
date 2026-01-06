@@ -1,15 +1,15 @@
 /**
  * E2E Test: Firebase Integration
- * 
+ *
  * This test demonstrates testing Firebase integration in a Cypress E2E test.
  */
 
-describe('Firebase Integration', () => {
+describe("Firebase Integration", () => {
 	beforeEach(() => {
-		cy.visit('/');
+		cy.visit("/");
 	});
 
-	it('should initialize Firebase services', () => {
+	it("should initialize Firebase services", () => {
 		// Check if Firebase is loaded in the window object
 		cy.window().should((win) => {
 			// Check that window object exists and is valid
@@ -18,18 +18,18 @@ describe('Firebase Integration', () => {
 		});
 	});
 
-	it('should handle Firebase initialization gracefully', () => {
+	it("should handle Firebase initialization gracefully", () => {
 		// Visit a page that uses Firebase
-		cy.visit('/');
+		cy.visit("/");
 
 		// Page should load without errors
-		cy.get('body').should('be.visible');
+		cy.get("body").should("be.visible");
 	});
 
-	it('should not block page rendering if Firebase fails', () => {
+	it("should not block page rendering if Firebase fails", () => {
 		// Even if Firebase has issues, the page should still render
-		cy.visit('/');
-		cy.get('body').should('not.be.empty');
+		cy.visit("/");
+		cy.get("body").should("not.be.empty");
 	});
 });
 
