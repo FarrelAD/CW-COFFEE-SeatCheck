@@ -1,12 +1,12 @@
 /**
  * Firebase App Initialization
- * 
+ *
  * This file initializes the Firebase app using the singleton pattern
  * to prevent multiple initializations.
  */
 
-import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { firebaseConfig, validateFirebaseConfig } from './config';
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
+import { firebaseConfig, validateFirebaseConfig } from "./config";
 
 let app: FirebaseApp;
 

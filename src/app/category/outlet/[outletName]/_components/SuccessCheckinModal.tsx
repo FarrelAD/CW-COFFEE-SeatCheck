@@ -1,15 +1,27 @@
-'use client';
+"use client";
 
-import { X } from 'lucide-react';
-import Image from 'next/image';
+import { X } from "lucide-react";
+import Image from "next/image";
+import type { CheckInRecord } from "@/lib/types";
 
-interface SuccessCheckinModalProps {
+export default function SuccessCheckinModal({
+	isOpen,
+	onClose,
+	checkInRecord,
+}: {
 	isOpen: boolean;
 	onClose: () => void;
-}
-
-export default function SuccessCheckinModal({ isOpen, onClose }: SuccessCheckinModalProps) {
+	checkInRecord: CheckInRecord | null;
+}) {
 	if (!isOpen) return null;
+
+	// Format timestamp
+	const formatTime = (timestamp: number) => {
+		return new Date(timestamp).toLocaleTimeString("id-ID", {
+			hour: "2-digit",
+			minute: "2-digit",
+		});
+	};
 
 	return (
 		<>
@@ -43,13 +55,31 @@ export default function SuccessCheckinModal({ isOpen, onClose }: SuccessCheckinM
 					</div>
 
 					{/* Success Message */}
-					<div className="text-center mb-8">
+					<div className="text-center mb-6">
 						<h2 className="text-2xl font-bold text-gray-900 mb-3">
-							Berhasil Checkin
+							Berhasil Check-in
 						</h2>
-						<p className="text-gray-400 text-base">
-							Selamat anda bisa menggunakan<br />Meja ini
-						</p>
+
+						{checkInRecord ? (
+							<div className="space-y-2">
+								<p className="text-gray-600 text-sm">
+									<span className="font-semibold">{checkInRecord.zone}</span>
+								</p>
+								<p className="text-gray-600 text-sm">
+									Kursi:{" "}
+									<span className="font-semibold">{checkInRecord.seatId}</span>
+								</p>
+								<p className="text-gray-400 text-xs">
+									Check-in pada {formatTime(checkInRecord.checkedInAt)}
+								</p>
+							</div>
+						) : (
+							<p className="text-gray-400 text-base">
+								Selamat anda bisa menggunakan
+								<br />
+								Meja ini
+							</p>
+						)}
 					</div>
 
 					{/* Done Button */}

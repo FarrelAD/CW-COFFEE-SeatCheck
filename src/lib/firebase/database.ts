@@ -3,8 +3,8 @@
  * Provides database instance and helper functions
  */
 
-import { getDatabase, type Database } from 'firebase/database';
-import { getFirebaseApp } from './app';
+import { getDatabase, type Database } from "firebase/database";
+import { getFirebaseApp } from "./app";
 
 let database: Database | null = null;
 
@@ -24,7 +24,7 @@ export function getFirebaseDatabase(): Database {
  */
 export const DB_PATHS = {
 	// Outlets root
-	outlets: () => 'outlets',
+	outlets: () => "outlets",
 
 	// Specific outlet
 	outlet: (outletId: number) => `outlets/${outletId}`,

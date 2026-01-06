@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Armchair } from 'lucide-react';
-import { parseGridLayout } from '@/lib/data/outlet-layouts';
-import { useCapacityData } from '@/lib/hooks/use-capacity-data';
-import type { Block, OutletLayout } from '@/lib/types';
+import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Armchair } from "lucide-react";
+import { parseGridLayout } from "@/lib/data/outlet-layouts";
+import { useCapacityData } from "@/lib/hooks/use-capacity-data";
+import type { Block, OutletLayout } from "@/lib/types";
 
 // Helper function to parse coordinate ID (e.g., "A1" -> {row: 0, col: 0})
 const parseCoordinate = (id: string): { row: number; col: number } | null => {
@@ -17,7 +17,7 @@ const parseCoordinate = (id: string): { row: number; col: number } | null => {
 	const number = parseInt(match[2], 10);
 
 	// A=0, B=1, C=2, ..., P=15 (columns)
-	const col = letter.charCodeAt(0) - 'A'.charCodeAt(0);
+	const col = letter.charCodeAt(0) - "A".charCodeAt(0);
 	// 1=0, 2=1, 3=2, ... (rows)
 	const row = number - 1;
 
@@ -48,7 +48,7 @@ export default function CheckingPageClient({
 	}, [layout]);
 
 	// Set first area as default active zone
-	const [activeZone, setActiveZone] = useState('');
+	const [activeZone, setActiveZone] = useState("");
 
 	// Update active zone when areas are loaded
 	useEffect(() => {
@@ -65,7 +65,7 @@ export default function CheckingPageClient({
 		if (!area) return { width: 16, height: 17 };
 
 		// Check if it's a grid layout with dimensions
-		if ('dimensions' in area) {
+		if ("dimensions" in area) {
 			return area.dimensions;
 		}
 
@@ -81,7 +81,7 @@ export default function CheckingPageClient({
 		if (!area) return new Map<string, Block>();
 
 		// Check if it's a grid layout or traditional blocks layout
-		const blocks = 'grid' in area ? parseGridLayout(area) : area.blocks;
+		const blocks = "grid" in area ? parseGridLayout(area) : area.blocks;
 
 		const blocksMap = new Map<string, Block>();
 		blocks.forEach((block: Block) => {
@@ -97,30 +97,34 @@ export default function CheckingPageClient({
 
 	/**
 	 * Render a single grid block
-	 * @param row 
-	 * @param col 
-	 * @param blocksMap 
-	 * @returns 
+	 * @param row
+	 * @param col
+	 * @param blocksMap
+	 * @returns
 	 */
-	const renderGridBlock = (row: number, col: number, blocksMap: Map<string, Block>) => {
+	const renderGridBlock = (
+		row: number,
+		col: number,
+		blocksMap: Map<string, Block>
+	) => {
 		const key = `${row}-${col}`;
 		const block = blocksMap.get(key);
 
-		if (block && block.type === 'chair') {
+		if (block && block.type === "chair") {
 			// Render chair with Armchair icon
-			const bgColor = block.status === 'used' ? 'bg-[#0a2463]' : 'bg-gray-300';
-			const iconColor = block.status === 'used' ? '#ffffff' : '#0a2463';
+			const bgColor = block.status === "used" ? "bg-[#0a2463]" : "bg-gray-300";
+			const iconColor = block.status === "used" ? "#ffffff" : "#0a2463";
 
 			// Determine rotation based on face direction
 			// Default Armchair icon faces right, so we rotate from there
 			const rotationMap = {
-				'right': 'rotate-270',      // 270° - faces right
-				'down': 'rotate-0',         // 0° - faces down
-				'left': 'rotate-90',        // 90° - faces left
-				'up': '-rotate-180',        // 180° - faces up
+				right: "rotate-270", // 270° - faces right
+				down: "rotate-0", // 0° - faces down
+				left: "rotate-90", // 90° - faces left
+				up: "-rotate-180", // 180° - faces up
 			};
 
-			const rotationClass = block.face ? rotationMap[block.face] : 'rotate-0';
+			const rotationClass = block.face ? rotationMap[block.face] : "rotate-0";
 
 			return (
 				<div
@@ -131,42 +135,45 @@ export default function CheckingPageClient({
 					<Armchair
 						className={`w-5 h-5 ${rotationClass}`}
 						color={iconColor}
-						fill={block.status === 'used' ? iconColor : 'none'}
+						fill={block.status === "used" ? iconColor : "none"}
 						strokeWidth={2}
 					/>
 				</div>
 			);
 		}
 
-		if (block && block.type === 'table') {
+		if (block && block.type === "table") {
 			// Check neighboring blocks to merge tables
 			const topKey = `${row - 1}-${col}`;
 			const bottomKey = `${row + 1}-${col}`;
 			const leftKey = `${row}-${col - 1}`;
 			const rightKey = `${row}-${col + 1}`;
 
-			const hasTableTop = blocksMap.get(topKey)?.type === 'table';
-			const hasTableBottom = blocksMap.get(bottomKey)?.type === 'table';
-			const hasTableLeft = blocksMap.get(leftKey)?.type === 'table';
-			const hasTableRight = blocksMap.get(rightKey)?.type === 'table';
+			const hasTableTop = blocksMap.get(topKey)?.type === "table";
+			const hasTableBottom = blocksMap.get(bottomKey)?.type === "table";
+			const hasTableLeft = blocksMap.get(leftKey)?.type === "table";
+			const hasTableRight = blocksMap.get(rightKey)?.type === "table";
 
 			// Calculate width and height - extend to 40px when adjacent tables exist
-			const width = hasTableLeft || hasTableRight ? 'w-[40px]' : 'w-[28px]';
-			const height = hasTableTop || hasTableBottom ? 'h-[40px]' : 'h-[28px]';
+			const width = hasTableLeft || hasTableRight ? "w-[40px]" : "w-[28px]";
+			const height = hasTableTop || hasTableBottom ? "h-[40px]" : "h-[28px]";
 
 			// Remove border-radius when connected to other tables
-			const hasAnyConnection = hasTableTop || hasTableBottom || hasTableLeft || hasTableRight;
-			const borderRadius = hasAnyConnection ? '0px' : '2px';
+			const hasAnyConnection =
+				hasTableTop || hasTableBottom || hasTableLeft || hasTableRight;
+			const borderRadius = hasAnyConnection ? "0px" : "2px";
 
 			// Build border classes for outer container - remove borders where tables connect
 			const outerBorderClasses = [
-				'border',
-				'border-gray-300',
-				hasTableTop ? 'border-t-0' : '',
-				hasTableBottom ? 'border-b-0' : '',
-				hasTableLeft ? 'border-l-0' : '',
-				hasTableRight ? 'border-r-0' : '',
-			].filter(Boolean).join(' ');
+				"border",
+				"border-gray-300",
+				hasTableTop ? "border-t-0" : "",
+				hasTableBottom ? "border-b-0" : "",
+				hasTableLeft ? "border-l-0" : "",
+				hasTableRight ? "border-r-0" : "",
+			]
+				.filter(Boolean)
+				.join(" ");
 
 			return (
 				<div
@@ -182,27 +189,29 @@ export default function CheckingPageClient({
 			);
 		}
 
-		if (block && block.type === 'walkway') {
+		if (block && block.type === "walkway") {
 			// Check neighboring blocks to merge walkways
 			const topKey = `${row - 1}-${col}`;
 			const bottomKey = `${row + 1}-${col}`;
 			const leftKey = `${row}-${col - 1}`;
 			const rightKey = `${row}-${col + 1}`;
 
-			const hasWalkwayTop = blocksMap.get(topKey)?.type === 'walkway';
-			const hasWalkwayBottom = blocksMap.get(bottomKey)?.type === 'walkway';
-			const hasWalkwayLeft = blocksMap.get(leftKey)?.type === 'walkway';
-			const hasWalkwayRight = blocksMap.get(rightKey)?.type === 'walkway';
+			const hasWalkwayTop = blocksMap.get(topKey)?.type === "walkway";
+			const hasWalkwayBottom = blocksMap.get(bottomKey)?.type === "walkway";
+			const hasWalkwayLeft = blocksMap.get(leftKey)?.type === "walkway";
+			const hasWalkwayRight = blocksMap.get(rightKey)?.type === "walkway";
 
 			// Build border classes - remove borders where walkways connect
 			const borderClasses = [
-				'border-2',
-				'border-[#0a2463]',
-				hasWalkwayTop ? 'border-t-0' : '',
-				hasWalkwayBottom ? 'border-b-0' : '',
-				hasWalkwayLeft ? 'border-l-0' : '',
-				hasWalkwayRight ? 'border-r-0' : '',
-			].filter(Boolean).join(' ');
+				"border-2",
+				"border-[#0a2463]",
+				hasWalkwayTop ? "border-t-0" : "",
+				hasWalkwayBottom ? "border-b-0" : "",
+				hasWalkwayLeft ? "border-l-0" : "",
+				hasWalkwayRight ? "border-r-0" : "",
+			]
+				.filter(Boolean)
+				.join(" ");
 
 			return (
 				<div
@@ -254,13 +263,13 @@ export default function CheckingPageClient({
 					<>
 						<div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
 							<div className="text-3xl font-bold text-green-600 mb-1">
-								{capacityData?.['Zona AC 1']?.available ?? 0}
+								{capacityData?.["Zona AC 1"]?.available ?? 0}
 							</div>
 							<div className="text-xs text-gray-600">Tersedia AC 1</div>
 						</div>
 						<div className="bg-green-50 rounded-xl p-4 text-center border border-green-200">
 							<div className="text-3xl font-bold text-green-600 mb-1">
-								{capacityData?.['Zona AC 2']?.available ?? 0}
+								{capacityData?.["Zona AC 2"]?.available ?? 0}
 							</div>
 							<div className="text-xs text-gray-600">Tersedia AC 2</div>
 						</div>
@@ -274,10 +283,11 @@ export default function CheckingPageClient({
 					<button
 						key={areaName}
 						onClick={() => setActiveZone(areaName)}
-						className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${activeZone === areaName
-							? 'bg-[#0a2463] text-yellow-400'
-							: 'bg-[#0a2463] text-white hover:bg-[#082050]'
-							}`}
+						className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${
+							activeZone === areaName
+								? "bg-midnight-blue text-yellow-400"
+								: "bg-midnight-blue text-white hover:bg-[#082050]"
+						}`}
 					>
 						{areaName.toUpperCase()}
 					</button>
@@ -288,32 +298,44 @@ export default function CheckingPageClient({
 			<div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
 				{(() => {
 					const area = layout.layout.find((a) => a.area === activeZone);
-					const hasGrid = area && 'grid' in area && area.grid.length > 0;
+					const hasGrid = area && "grid" in area && area.grid.length > 0;
 
 					if (!hasGrid) {
 						return (
 							<div className="text-center py-12">
-								<p className="text-gray-500">Denah untuk zona ini sedang dalam pengembangan</p>
+								<p className="text-gray-500">
+									Denah untuk zona ini sedang dalam pengembangan
+								</p>
 							</div>
 						);
 					}
 
 					return (
 						<>
-							<h3 className="text-lg font-bold text-gray-900 mb-4">{activeZone}</h3>
+							<h3 className="text-lg font-bold text-gray-900 mb-4">
+								{activeZone}
+							</h3>
 							{/* Dynamic Grid based on area dimensions */}
 							<div className="overflow-x-auto">
 								<div className="inline-block border-2 border-gray-900">
 									{(() => {
 										const dimensions = getAreaDimensions(activeZone);
 										const blocksMap = getBlocksMap(activeZone);
-										return Array.from({ length: dimensions.height }).map((_, rowIndex) => (
-											<div key={`row-${rowIndex}`} className="flex">
-												{Array.from({ length: dimensions.width }).map((_, colIndex) => {
-													return renderGridBlock(rowIndex, colIndex, blocksMap);
-												})}
-											</div>
-										));
+										return Array.from({ length: dimensions.height }).map(
+											(_, rowIndex) => (
+												<div key={`row-${rowIndex}`} className="flex">
+													{Array.from({ length: dimensions.width }).map(
+														(_, colIndex) => {
+															return renderGridBlock(
+																rowIndex,
+																colIndex,
+																blocksMap
+															);
+														}
+													)}
+												</div>
+											)
+										);
 									})()}
 								</div>
 							</div>
@@ -325,12 +347,10 @@ export default function CheckingPageClient({
 				<div className="flex items-center justify-center gap-8 mt-8 pt-6 border-t-2 border-gray-900">
 					<div className="flex items-center gap-2">
 						<div className="w-8 h-8 bg-gray-300 rounded"></div>
-						<span className="text-sm font-medium text-gray-700">
-							Kosong
-						</span>
+						<span className="text-sm font-medium text-gray-700">Kosong</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<div className="w-8 h-8 bg-[#0a2463] rounded"></div>
+						<div className="w-8 h-8 bg-midnight-blue rounded"></div>
 						<span className="text-sm font-medium text-gray-700">
 							Masih Digunakan
 						</span>
@@ -345,6 +365,6 @@ export default function CheckingPageClient({
 			>
 				Kembali ke Dashboard
 			</Link>
-		</main >
+		</main>
 	);
 }

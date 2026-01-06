@@ -1,27 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 const leftMenuItems = [
-	{ label: 'HOME', href: '/' },
-	{ label: 'ABOUT US', href: '/about-us' },
-	{ label: 'ARTICLE', href: '/category/article' },
-	{ label: 'OUR OUTLET', href: '/category/outlet' },
+	{ label: "HOME", href: "/" },
+	{ label: "ABOUT US", href: "/about-us" },
+	{ label: "ARTICLE", href: "/category/article" },
+	{ label: "OUR OUTLET", href: "/category/outlet" },
 ];
 
 const rightMenuItems = [
-	{ label: 'OUR MENU', href: '/our-menu' },
-	{ label: 'CAREER', href: '/category/career' },
-	{ label: 'PROPOSAL', href: 'https://docs.google.com/forms/d/e/1FAIpQLSdPTxg3wmC4eugoVfStVakcxMWqBAZPMlwCLDBUovQmbGlwAQ/viewform?usp=header' },
-	{ label: 'CONTACT US', href: '/kontak' },
+	{ label: "OUR MENU", href: "/our-menu" },
+	{ label: "CAREER", href: "/category/career" },
+	{
+		label: "PROPOSAL",
+		href: "https://docs.google.com/forms/d/e/1FAIpQLSdPTxg3wmC4eugoVfStVakcxMWqBAZPMlwCLDBUovQmbGlwAQ/viewform?usp=header",
+	},
+	{ label: "CONTACT US", href: "/kontak" },
 ];
 
-const allMenuItems = [
-	...leftMenuItems,
-	...rightMenuItems,
-];
+const allMenuItems = [...leftMenuItems, ...rightMenuItems];
 
 export default function Header() {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -69,8 +69,11 @@ export default function Header() {
 
 			{/* Mobile Menu Sidebar */}
 			<div
-				className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-					}`}
+				className={`lg:hidden fixed inset-0 z-50 transition-opacity duration-300 ${
+					isMobileMenuOpen
+						? "opacity-100 pointer-events-auto"
+						: "opacity-0 pointer-events-none"
+				}`}
 			>
 				{/* Overlay */}
 				<div
@@ -80,8 +83,9 @@ export default function Header() {
 
 				{/* Sidebar */}
 				<div
-					className={`absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-						}`}
+					className={`absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white transform transition-transform duration-300 ${
+						isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+					}`}
 				>
 					<div className="flex items-center justify-between p-4 border-b">
 						<button

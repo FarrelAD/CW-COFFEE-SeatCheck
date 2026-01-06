@@ -1,12 +1,12 @@
 /**
  * Firebase Storage Service
- * 
+ *
  * This file initializes and exports the Firebase Storage service.
  * Import this module to use Firebase Storage throughout your application.
  */
 
-import { getStorage, type FirebaseStorage } from 'firebase/storage';
-import { firebaseApp } from './app';
+import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { firebaseApp } from "./app";
 
 /**
  * Firebase Storage instance

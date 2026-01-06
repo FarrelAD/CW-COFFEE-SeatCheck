@@ -3,7 +3,7 @@
 		"outlets": {
 			"$outletId": {
 				".read": true,
-				".write": "auth != null",
+				".write": true,
 				"seats": {
 					"$zoneName": {
 						"$seatId": {

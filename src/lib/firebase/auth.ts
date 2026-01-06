@@ -1,12 +1,12 @@
 /**
  * Firebase Authentication Service
- * 
+ *
  * This file initializes and exports the Firebase Authentication service.
  * Import this module to use Firebase Auth throughout your application.
  */
 
-import { getAuth, type Auth } from 'firebase/auth';
-import { firebaseApp } from './app';
+import { getAuth, type Auth } from "firebase/auth";
+import { firebaseApp } from "./app";
 
 /**
  * Firebase Authentication instance

@@ -1,12 +1,12 @@
 /**
  * Firebase Firestore Service
- * 
+ *
  * This file initializes and exports the Firestore database service.
  * Import this module to use Firestore throughout your application.
  */
 
-import { getFirestore, type Firestore } from 'firebase/firestore';
-import { firebaseApp } from './app';
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { firebaseApp } from "./app";
 
 /**
  * Firestore database instance

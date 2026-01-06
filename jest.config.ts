@@ -1,41 +1,38 @@
-import type { Config } from 'jest';
-import nextJest from 'next/jest';
+import type { Config } from "jest";
+import nextJest from "next/jest";
 
 const createJestConfig = nextJest({
-  dir: './',
-})
+	dir: "./",
+});
 
 const config: Config = {
 	verbose: true,
-	preset: 'ts-jest',
-	testEnvironment: 'jsdom',
+	preset: "ts-jest",
+	testEnvironment: "jsdom",
 
 	// Root directory
-	rootDir: '.',
+	rootDir: ".",
 
 	// Setup files
-	setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+	setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 
 	// Module paths
 	moduleNameMapper: {
-		'^@/(.*)$': '<rootDir>/$1',
+		"^@/(.*)$": "<rootDir>/$1",
 	},
 
 	// Test match patterns
-	testMatch: [
-		'**/tests/**/*.[jt]s?(x)',
-		'**/?(*.)+(spec|test).[jt]s?(x)',
-	],
+	testMatch: ["**/tests/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[jt]s?(x)"],
 
 	// Coverage configuration
 	collectCoverageFrom: [
-		'app/**/*.{js,jsx,ts,tsx}',
-		'lib/**/*.{js,jsx,ts,tsx}',
-		'!**/*.d.ts',
-		'!**/node_modules/**',
-		'!**/.next/**',
-		'!**/coverage/**',
-		'!**/cypress/**',
+		"app/**/*.{js,jsx,ts,tsx}",
+		"lib/**/*.{js,jsx,ts,tsx}",
+		"!**/*.d.ts",
+		"!**/node_modules/**",
+		"!**/.next/**",
+		"!**/coverage/**",
+		"!**/cypress/**",
 	],
 
 	// Coverage thresholds (optional - adjust as needed)
@@ -50,13 +47,13 @@ const config: Config = {
 
 	// Ignore patterns
 	testPathIgnorePatterns: [
-		'<rootDir>/node_modules/',
-		'<rootDir>/.next/',
-		'<rootDir>/cypress/',
+		"<rootDir>/node_modules/",
+		"<rootDir>/.next/",
+		"<rootDir>/cypress/",
 	],
 
 	// Module file extensions
-	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+	moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
 };
 
 export default createJestConfig(config);

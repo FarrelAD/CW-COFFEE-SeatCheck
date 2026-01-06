@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { QrCode } from 'lucide-react';
-import QRScannerModal from './QRScannerModal';
+import { QrCode } from "lucide-react";
+import QRScannerModal from "./QRScannerModal";
+import SuccessCheckinModal from "./SuccessCheckinModal";
+import type { CheckInRecord } from "@/lib/types";
 
 export default function DashboardOutletHeader() {
 	const params = useParams();
 	const outletName = params.outletName as string;
 	const pathname = usePathname();
 	const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+	const [showSuccessModal, setShowSuccessModal] = useState(false);
+	const [checkInRecord, setCheckInRecord] = useState<CheckInRecord | null>(
+		null
+	);
 
 	return (
 		<>
@@ -70,11 +76,23 @@ export default function DashboardOutletHeader() {
 			<QRScannerModal
 				isOpen={isQRModalOpen}
 				onClose={() => setIsQRModalOpen(false)}
-				onScan={(data) => {
-					console.log('QR Code scanned:', data);
-					// You can add your custom logic here
-					// For example, navigate to a page, show a toast, etc.
-					alert(`QR Code scanned: ${data}`);
+				onSuccess={(record) => {
+					console.log("Check-in record:", record);
+					// Close scanner modal
+					setIsQRModalOpen(false);
+					// Set check-in record and show success modal
+					setCheckInRecord(record);
+					setShowSuccessModal(true);
+				}}
+			/>
+
+			{/* Success Check-in Modal */}
+			<SuccessCheckinModal
+				isOpen={showSuccessModal}
+				checkInRecord={checkInRecord}
+				onClose={() => {
+					setShowSuccessModal(false);
+					setCheckInRecord(null);
 				}}
 			/>
 		</>

@@ -1,10 +1,10 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from "next/image";
+import Link from "next/link";
 
 export default function ProductCard({
 	imageUrl,
 	title,
-	link = '#'
+	link = "#",
 }: {
 	imageUrl: string;
 	title: string;
@@ -13,7 +13,10 @@ export default function ProductCard({
 	return (
 		<div className="group shrink-0 w-64 bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
 			{/* Image Container */}
-			<Link href={link} className="block relative aspect-square overflow-hidden bg-linear-to-br from-amber-50 to-amber-100">
+			<Link
+				href={link}
+				className="block relative aspect-square overflow-hidden bg-linear-to-br from-amber-50 to-amber-100"
+			>
 				<Image
 					src={imageUrl}
 					alt={title}

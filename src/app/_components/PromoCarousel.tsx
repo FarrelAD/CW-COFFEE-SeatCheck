@@ -1,19 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
-
-interface PromoSlide {
-	id: number;
-	imageUrl: string;
-	alt: string;
-	link?: string;
-}
+import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
+import { PromoSlide } from "@/lib/types";
 
 export default function PromoCarousel({
 	slides,
 	autoplayInterval = 5000,
-	className = '',
+	className = "",
 }: {
 	slides: PromoSlide[];
 	autoplayInterval?: number; // in milliseconds
@@ -22,12 +16,15 @@ export default function PromoCarousel({
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [isAnimating, setIsAnimating] = useState(false);
 
-	const goToSlide = useCallback((index: number) => {
-		if (isAnimating) return;
-		setIsAnimating(true);
-		setCurrentIndex(index);
-		setTimeout(() => setIsAnimating(false), 600);
-	}, [isAnimating]);
+	const goToSlide = useCallback(
+		(index: number) => {
+			if (isAnimating) return;
+			setIsAnimating(true);
+			setCurrentIndex(index);
+			setTimeout(() => setIsAnimating(false), 600);
+		},
+		[isAnimating]
+	);
 
 	const nextSlide = useCallback(() => {
 		const nextIndex = (currentIndex + 1) % slides.length;
@@ -59,8 +56,9 @@ export default function PromoCarousel({
 				{slides.map((slide, index) => (
 					<div
 						key={slide.id}
-						className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-							}`}
+						className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+							index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+						}`}
 					>
 						<div className="relative w-full h-full">
 							<Image
@@ -167,10 +165,11 @@ export default function PromoCarousel({
 						</svg>
 						{/* Center dot */}
 						<div
-							className={`absolute inset-0 m-auto w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
-								? 'bg-white scale-100'
-								: 'bg-white/60 scale-75 group-hover:scale-90'
-								}`}
+							className={`absolute inset-0 m-auto w-2 h-2 rounded-full transition-all duration-300 ${
+								index === currentIndex
+									? "bg-white scale-100"
+									: "bg-white/60 scale-75 group-hover:scale-90"
+							}`}
 						/>
 					</button>
 				))}

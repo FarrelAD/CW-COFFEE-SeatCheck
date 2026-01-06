@@ -4,5 +4,9 @@
 	"editor.detectIndentation": false,
 	"python-envs.defaultEnvManager": "ms-python.python:conda",
 	"python-envs.defaultPackageManager": "ms-python.python:conda",
-	"python-envs.pythonProjects": []
+	"python-envs.pythonProjects": [],
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

@@ -1,20 +1,20 @@
 /**
  * Cypress E2E Support File
- * 
+ *
  * This file is loaded before every test file.
  * Use it to configure global settings and import custom commands.
  */
 
 // Import custom commands
-import './commands';
+import "./commands";
 
 // Global configuration
-Cypress.on('uncaught:exception', (err, runnable) => {
+Cypress.on("uncaught:exception", (err, runnable) => {
 	// Prevent Cypress from failing tests on uncaught exceptions
 	// You can customize this to handle specific errors
 
 	// For example, ignore Firebase initialization errors in tests
-	if (err.message.includes('Firebase')) {
+	if (err.message.includes("Firebase")) {
 		return false;
 	}
 
