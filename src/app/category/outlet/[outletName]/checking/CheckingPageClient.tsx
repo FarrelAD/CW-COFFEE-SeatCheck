@@ -285,8 +285,8 @@ export default function CheckingPageClient({
 						onClick={() => setActiveZone(areaName)}
 						className={`px-6 py-2.5 font-bold rounded-lg whitespace-nowrap transition-colors ${
 							activeZone === areaName
-								? "bg-[#0a2463] text-yellow-400"
-								: "bg-[#0a2463] text-white hover:bg-[#082050]"
+								? "bg-midnight-blue text-yellow-400"
+								: "bg-midnight-blue text-white hover:bg-[#082050]"
 						}`}
 					>
 						{areaName.toUpperCase()}
@@ -350,7 +350,7 @@ export default function CheckingPageClient({
 						<span className="text-sm font-medium text-gray-700">Kosong</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<div className="w-8 h-8 bg-[#0a2463] rounded"></div>
+						<div className="w-8 h-8 bg-midnight-blue rounded"></div>
 						<span className="text-sm font-medium text-gray-700">
 							Masih Digunakan
 						</span>
