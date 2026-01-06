@@ -7,13 +7,11 @@ import { RefObject } from "react";
 export default function ScannerFrame({
 	videoRef,
 	isScanning,
-	scannedData,
 	error,
 	onRetry,
 }: {
 	videoRef: RefObject<HTMLVideoElement | null>;
 	isScanning: boolean;
-	scannedData: string | null;
 	error: string | null;
 	onRetry: () => void;
 }) {
@@ -39,19 +37,9 @@ export default function ScannerFrame({
 				)}
 
 				{/* Placeholder when not scanning */}
-				{!isScanning && !scannedData && (
+				{!isScanning && (
 					<div className="absolute inset-0 flex items-center justify-center bg-gray-800">
 						<Camera className="w-16 h-16 text-gray-400" />
-					</div>
-				)}
-
-				{/* Success Message */}
-				{scannedData && (
-					<div className="absolute inset-0 flex items-center justify-center bg-green-600/90">
-						<div className="text-center text-white p-4">
-							<div className="text-2xl font-bold mb-2">✓ Scanned!</div>
-							<div className="text-sm break-all">{scannedData}</div>
-						</div>
 					</div>
 				)}
 

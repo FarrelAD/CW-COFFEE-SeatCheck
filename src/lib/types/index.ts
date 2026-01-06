@@ -136,6 +136,42 @@ export interface CapacityInfo {
 	available: number;
 }
 
+export interface CapacityCardProps {
+	zoneName: string;
+	capacity: CapacityInfo;
+}
+
+// ============================================================================
+// QR Code & Check-in Types
+// ============================================================================
+
+export interface SeatQRData {
+	outletId: number;
+	outletName: string;
+	zone: string;
+	seatId: string;
+	type: 'seat-checkin';
+	version: '1.0';
+}
+
+export interface CheckInRecord {
+	seatId: string;
+	zone: string;
+	outletId: number;
+	checkedInAt: number;
+	checkedOutAt: number | null;
+	duration: number | null;
+	sessionId: string;
+}
+
+export interface CheckInSession {
+	sessionId: string;
+	seatId: string;
+	zone: string;
+	checkedInAt: number;
+	isActive: boolean;
+}
+
 export interface ZoneCapacity {
 	[zoneName: string]: CapacityInfo;
 }

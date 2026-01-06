@@ -5,7 +5,7 @@ import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
  * Custom hook to manage QR code scanning logic
  */
 export function useQRScanner(
-	onScan?: (data: string) => void
+	onScan?: (data: string) => void | Promise<void>
 ): {
 	isScanning: boolean;
 	scannedData: string | null;
@@ -32,7 +32,7 @@ export function useQRScanner(
 	/**
 	 * Handle QR code scan result
 	 */
-	const handleQRCodeResult = (result: any) => {
+	const handleQRCodeResult = async (result: any) => {
 		if (!result) {
 			continueScanning();
 			return;
@@ -41,11 +41,13 @@ export function useQRScanner(
 		const data = result.getText();
 		setScannedData(data);
 
-		if (onScan) {
-			onScan(data);
-		}
-
+		// Stop scanning first to prevent multiple scans
 		stopScanning();
+
+		// Call onScan callback and wait if it's async
+		if (onScan) {
+			await onScan(data);
+		}
 	};
 
 	/**

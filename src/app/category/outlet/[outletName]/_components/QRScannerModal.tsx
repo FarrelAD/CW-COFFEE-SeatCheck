@@ -2,26 +2,35 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import SuccessCheckinModal from "./SuccessCheckinModal";
 import { useCamera } from "./hooks/useCamera";
 import { useQRScanner } from "./hooks/useQRScanner";
+import { useCheckIn } from "@/lib/hooks/use-checkin";
+import { parseSeatQRData } from "@/lib/utils/qr-utils";
 import ScannerFrame from "./ScannerFrame";
 import ScannerControls from "./ScannerControls";
 import ScannerInstructions from "./ScannerInstructions";
+import type { CheckInRecord } from "@/lib/types";
 
 export default function QRScannerModal({
 	isOpen,
 	onClose,
-	onScan,
+	onSuccess,
 }: {
 	isOpen: boolean;
 	onClose: () => void;
-	onScan?: (data: string) => void;
+	onSuccess?: (record: CheckInRecord) => void;
 }) {
-	const [showSuccessModal, setShowSuccessModal] = useState(false);
+	const [scanError, setScanError] = useState<string | null>(null);
 
 	// Camera management
-	const { videoRef, error, startCamera, stopCamera } = useCamera();
+	const { videoRef, error: cameraError, startCamera, stopCamera } = useCamera();
+
+	// Check-in management
+	const {
+		checkIn,
+		loading: checkInLoading,
+		error: checkInError,
+	} = useCheckIn();
 
 	// QR Scanner management
 	const {
@@ -30,14 +39,55 @@ export default function QRScannerModal({
 		startScanning,
 		stopScanning,
 		resetScannedData,
-	} = useQRScanner((data) => {
-		// Stop camera when scan succeeds
+	} = useQRScanner(async (data) => {
+		// Stop scanning and camera
+		stopScanning();
 		stopCamera();
+		setScanError(null);
 
-		if (onScan) {
-			onScan(data);
+		try {
+			// Parse QR data
+			const qrData = parseSeatQRData(data);
+			console.log("QR Data:", qrData);
+
+			if (!qrData) {
+				setScanError("Invalid QR code. Please scan a valid seat QR code.");
+				// Restart camera for retry
+				setTimeout(async () => {
+					await startCamera();
+					if (videoRef.current) {
+						startScanning(videoRef.current);
+					}
+				}, 2000);
+				return;
+			}
+
+			console.log("Performing check-in...");
+
+			// Perform check-in
+			const record = await checkIn(qrData);
+
+			// Call success callback
+			if (onSuccess) {
+				console.log("Check-in successful. Record:", record);
+				onSuccess(record);
+			} else {
+				console.log("No success callback provided.");
+			}
+		} catch (err) {
+			console.error("Check-in error:", err);
+			const errorMessage =
+				err instanceof Error ? err.message : "Failed to check in";
+			setScanError(errorMessage);
+
+			// Restart camera for retry after error
+			setTimeout(async () => {
+				await startCamera();
+				if (videoRef.current) {
+					startScanning(videoRef.current);
+				}
+			}, 2000);
 		}
-		setShowSuccessModal(true);
 	});
 
 	/**
@@ -137,14 +187,13 @@ export default function QRScannerModal({
 					<ScannerFrame
 						videoRef={videoRef}
 						isScanning={isScanning}
-						scannedData={scannedData}
-						error={error}
+						error={cameraError || scanError || checkInError}
 						onRetry={handleRetry}
 					/>
 
 					{/* Scan Button */}
 					<ScannerControls
-						isScanning={isScanning}
+						isScanning={isScanning || checkInLoading}
 						scannedData={scannedData}
 						onToggleScan={handleToggleScan}
 					/>
@@ -156,16 +205,6 @@ export default function QRScannerModal({
 					/>
 				</div>
 			</div>
-
-			{/* Success Check-in Modal */}
-			<SuccessCheckinModal
-				isOpen={showSuccessModal}
-				onClose={() => {
-					setShowSuccessModal(false);
-					resetScannedData();
-					onClose();
-				}}
-			/>
 		</>
 	);
 }
