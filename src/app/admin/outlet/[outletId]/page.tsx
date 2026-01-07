@@ -1,10 +1,5 @@
 "use client";
 
-/**
- * Outlet Admin Page
- * Manages seats and monitors capacity for a specific outlet
- */
-
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/use-auth";
@@ -16,6 +11,10 @@ import ZoneSelector from "./_components/ZoneSelector";
 import AdminFloorPlan from "./_components/AdminFloorPlan";
 import CapacityStats from "./_components/CapacityStats";
 
+/**
+ * Outlet Admin Page
+ * Manages seats and monitors capacity for a specific outlet
+ */
 export default function OutletAdminPage() {
 	const params = useParams();
 	const router = useRouter();

@@ -1,16 +1,15 @@
 "use client";
 
-/**
- * Admin Dashboard Page
- * Shows all outlets for super admin, redirects outlet admin to their outlet
- */
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { outlets } from "@/lib/data/outlets";
 import OutletCard from "./_components/OutletCard";
 
+/**
+ * Admin Dashboard Page
+ * Shows all outlets for super admin, redirects outlet admin to their outlet
+ */
 export default function AdminDashboardPage() {
 	const { user } = useAuth();
 	const router = useRouter();

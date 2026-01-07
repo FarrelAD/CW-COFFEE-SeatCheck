@@ -12,10 +12,3 @@ export interface AdminUser {
 	assignedOutletId?: number; // Only for outlet admins
 	createdAt: Date;
 }
-
-export interface AuthContextType {
-	user: AdminUser | null;
-	loading: boolean;
-	signIn: (email: string, password: string) => Promise<void>;
-	signOut: () => Promise<void>;
-}

@@ -8,7 +8,15 @@
 import { createContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthChange } from "../firebase/auth";
 import { getAdminUser } from "../services/admin-service";
-import type { AdminUser, AuthContextType } from "../types/admin";
+import type { AdminUser } from "../types/admin";
+
+interface AuthContextType {
+	user: AdminUser | null;
+	loading: boolean;
+	signIn: (email: string, password: string) => Promise<void>;
+	signOut: () => Promise<void>;
+}
+
 
 export const AuthContext = createContext<AuthContextType | undefined>(
 	undefined
