@@ -16,27 +16,14 @@ import { getFirebaseDatabase, DB_PATHS } from "@/lib/firebase/database";
 import type {
 	OutletSeatData,
 	ZoneSeatData,
+	SeatData,
 	SeatStatus,
 	BlockStatus,
+	BlockType,
+	BlockFace,
 	OutletCapacityData,
 	CapacityInfo,
 } from "@/lib/types";
-
-/**
- * Subscribe to all seat data for an outlet
- */
-export function subscribeToOutletSeats(
-	outletId: number,
-	callback: (data: OutletSeatData | null) => void
-): Unsubscribe {
-	const db = getFirebaseDatabase();
-	const seatsRef = ref(db, DB_PATHS.outletSeats(outletId));
-
-	return onValue(seatsRef, (snapshot: DataSnapshot) => {
-		const data = snapshot.val();
-		callback(data);
-	});
-}
 
 /**
  * Subscribe to seat data for a specific zone
@@ -56,43 +43,30 @@ export function subscribeToZoneSeats(
 }
 
 /**
- * Subscribe to capacity data for an outlet
- */
-export function subscribeToOutletCapacity(
-	outletId: number,
-	callback: (data: OutletCapacityData | null) => void
-): Unsubscribe {
-	const db = getFirebaseDatabase();
-	const capacityRef = ref(db, DB_PATHS.outletCapacity(outletId));
-
-	return onValue(capacityRef, (snapshot: DataSnapshot) => {
-		const data = snapshot.val();
-		callback(data);
-	});
-}
-
-/**
  * Update a single seat status
  * @param outletId - Outlet ID
  * @param zoneName - Zone name
  * @param seatId - Seat ID
  * @param status - New seat status
+ * @param additionalData - Optional additional seat data (type, face)
  */
 export async function updateSeatStatus(
 	outletId: number,
 	zoneName: string,
 	seatId: string,
-	status: BlockStatus
+	status: BlockStatus,
+	additionalData?: Partial<SeatData>
 ): Promise<void> {
 	const db = getFirebaseDatabase();
 	const seatRef = ref(db, DB_PATHS.seat(outletId, zoneName, seatId));
 
-	const seatData: SeatStatus = {
+	const seatData: Partial<SeatData> = {
 		status,
 		updatedAt: Date.now(),
+		...additionalData,
 	};
 
-	await set(seatRef, seatData);
+	await update(seatRef, seatData);
 }
 
 /**
@@ -122,12 +96,10 @@ export async function updateMultipleSeats(
  */
 export async function getSeatSnapshot(
 	outletId: number,
-	zoneName?: string
-): Promise<OutletSeatData | ZoneSeatData | null> {
+	zoneName: string
+): Promise<ZoneSeatData | null> {
 	const db = getFirebaseDatabase();
-	const path = zoneName
-		? DB_PATHS.zoneSeats(outletId, zoneName)
-		: DB_PATHS.outletSeats(outletId);
+	const path = DB_PATHS.zoneSeats(outletId, zoneName);
 
 	const snapshot = await get(ref(db, path));
 	return snapshot.val();
@@ -156,15 +128,17 @@ export function calculateCapacity(seatData: ZoneSeatData | null): CapacityInfo {
 export async function initializeZoneSeats(
 	outletId: number,
 	zoneName: string,
-	seatIds: string[]
+	seats: Array<{ seatId: string; type: BlockType; face?: BlockFace }>
 ): Promise<void> {
 	const db = getFirebaseDatabase();
 	const zoneRef = ref(db, DB_PATHS.zoneSeats(outletId, zoneName));
 
 	const initialData: ZoneSeatData = {};
-	seatIds.forEach((seatId) => {
+	seats.forEach(({ seatId, type, face }) => {
 		initialData[seatId] = {
+			type,
 			status: "available",
+			face,
 			updatedAt: Date.now(),
 		};
 	});

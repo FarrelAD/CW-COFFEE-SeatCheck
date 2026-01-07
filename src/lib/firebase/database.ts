@@ -21,6 +21,7 @@ export function getFirebaseDatabase(): Database {
 
 /**
  * Database path helpers
+ * Unified path structure using "zones" terminology consistently
  */
 export const DB_PATHS = {
 	// Outlets root
@@ -29,21 +30,29 @@ export const DB_PATHS = {
 	// Specific outlet
 	outlet: (outletId: number) => `outlets/${outletId}`,
 
-	// Seat data for an outlet
-	outletSeats: (outletId: number) => `outlets/${outletId}/seats`,
+	// All zones for an outlet
+	outletZones: (outletId: number) => `outlets/${outletId}/zones`,
 
-	// Specific zone seats
+	// Specific zone
+	zone: (outletId: number, zoneName: string) =>
+		`outlets/${outletId}/zones/${zoneName}`,
+
+	// All seats in a zone
 	zoneSeats: (outletId: number, zoneName: string) =>
-		`outlets/${outletId}/seats/${zoneName}`,
+		`outlets/${outletId}/zones/${zoneName}/seats`,
 
 	// Specific seat
 	seat: (outletId: number, zoneName: string, seatId: string) =>
-		`outlets/${outletId}/seats/${zoneName}/${seatId}`,
+		`outlets/${outletId}/zones/${zoneName}/seats/${seatId}`,
 
-	// Capacity data for an outlet
-	outletCapacity: (outletId: number) => `outlets/${outletId}/capacity`,
-
-	// Specific zone capacity
+	// Zone capacity
 	zoneCapacity: (outletId: number, zoneName: string) =>
-		`outlets/${outletId}/capacity/${zoneName}`,
+		`outlets/${outletId}/zones/${zoneName}/capacity`,
+
+	// Check-ins root for outlet
+	checkins: (outletId: number) => `outlets/${outletId}/checkins`,
+
+	// Specific check-in record
+	checkin: (outletId: number, sessionId: string) =>
+		`outlets/${outletId}/checkins/${sessionId}`,
 } as const;
