@@ -43,6 +43,12 @@ export type {
 	GridAreaLayout,
 	AreaLayout,
 	OutletLayout,
+	SeatData,
+	ZoneSeatData,
+	OutletSeatData,
+	CapacityInfo,
+	ZoneCapacity,
+	OutletCapacityData,
 } from "./seat";
 
 // ============================================================================
@@ -51,13 +57,6 @@ export type {
 export type { SeatQRData, CheckInRecord, CheckInSession } from "./checkin";
 
 // ============================================================================
-// Real-time Data Types (Firebase)
+// Real-time Data Types (Firebase) - Legacy, use seat.ts types instead
 // ============================================================================
-export type {
-	SeatStatus,
-	ZoneSeatData,
-	OutletSeatData,
-	CapacityInfo,
-	ZoneCapacity,
-	OutletCapacityData,
-} from "./realtime";
+export type { SeatStatus } from "./seat";

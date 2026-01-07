@@ -17,7 +17,7 @@ export async function checkInSeat(qrData: SeatQRData): Promise<CheckInRecord> {
 	const sessionId = generateSessionId();
 	const timestamp = Date.now();
 
-	// Update seat status to 'used'
+	// Update seat status to 'used' with check-in metadata
 	const seatRef = ref(db, DB_PATHS.seat(outletId, zone, seatId));
 	await update(seatRef, {
 		status: 'used' as BlockStatus,
@@ -37,7 +37,7 @@ export async function checkInSeat(qrData: SeatQRData): Promise<CheckInRecord> {
 		sessionId,
 	};
 
-	const checkInRef = ref(db, `outlets/${outletId}/checkins/${sessionId}`);
+	const checkInRef = ref(db, DB_PATHS.checkin(outletId, sessionId));
 	await set(checkInRef, checkInRecord);
 
 	return checkInRecord;
@@ -56,7 +56,7 @@ export async function checkOutSeat(
 	const timestamp = Date.now();
 
 	// Get check-in record to calculate duration
-	const checkInRef = ref(db, `outlets/${outletId}/checkins/${sessionId}`);
+	const checkInRef = ref(db, DB_PATHS.checkin(outletId, sessionId));
 	const snapshot = await get(checkInRef);
 	const checkInData = snapshot.val() as CheckInRecord | null;
 
@@ -66,7 +66,7 @@ export async function checkOutSeat(
 
 	const duration = timestamp - checkInData.checkedInAt;
 
-	// Update seat status to 'available'
+	// Update seat status to 'available' and clear check-in metadata
 	const seatRef = ref(db, DB_PATHS.seat(outletId, zone, seatId));
 	await update(seatRef, {
 		status: 'available' as BlockStatus,

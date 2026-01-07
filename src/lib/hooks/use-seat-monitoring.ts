@@ -21,7 +21,7 @@ interface UseSeatMonitoringReturn {
 
 export function useSeatMonitoring(
 	outletId: number,
-	area: string
+	zoneName: string
 ): UseSeatMonitoringReturn {
 	const [seats, setSeats] = useState<Block[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -35,19 +35,19 @@ export function useSeatMonitoring(
 	useEffect(() => {
 		setLoading(true);
 
-		const unsubscribe = subscribeToOutletSeats(outletId, area, (updatedSeats) => {
+		const unsubscribe = subscribeToOutletSeats(outletId, zoneName, (updatedSeats) => {
 			setSeats(updatedSeats);
 			setLoading(false);
 		});
 
 		// Cleanup subscription on unmount
 		return () => unsubscribe();
-	}, [outletId, area]);
+	}, [outletId, zoneName]);
 
 	// Fetch capacity statistics
 	const refreshCapacity = async () => {
 		try {
-			const stats = await getOutletCapacity(outletId, area);
+			const stats = await getOutletCapacity(outletId, zoneName);
 			setCapacity(stats);
 		} catch (error) {
 			console.error("Error refreshing capacity:", error);
@@ -67,7 +67,7 @@ export function useSeatMonitoring(
 		status: "available" | "used"
 	) => {
 		try {
-			await updateSeatStatusService(outletId, area, seatId, status);
+			await updateSeatStatusService(outletId, zoneName, seatId, status);
 		} catch (error) {
 			console.error("Error updating seat status:", error);
 			throw error;

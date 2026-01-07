@@ -2,37 +2,75 @@
 	"rules": {
 		"outlets": {
 			"$outletId": {
-        ".read": "auth != null",
-        ".write": "auth != null",
-				"seats": {
+				"zones": {
 					"$zoneName": {
-						"$seatId": {
-							".validate": "newData.hasChildren(['status', 'updatedAt'])",
-							"status": {
-								".validate": "newData.isString() && (newData.val() == 'available' || newData.val() == 'used' || newData.val() == 'reserved')"
+						"seats": {
+							".read": true,
+							".write": "auth != null",
+							"$seatId": {
+								".write": true,
+								".validate": "newData.hasChildren(['type', 'status', 'updatedAt'])",
+								"type": {
+									".validate": "newData.isString() && (newData.val() == 'chair' || newData.val() == 'table' || newData.val() == 'walkway')"
+								},
+								"status": {
+									".validate": "newData.isString() && (newData.val() == 'available' || newData.val() == 'used' || newData.val() == 'reserved')"
+								},
+								"face": {
+									".validate": "newData.isString() && (newData.val() == 'up' || newData.val() == 'down' || newData.val() == 'left' || newData.val() == 'right')"
+								},
+								"updatedAt": {
+									".validate": "newData.isNumber()"
+								},
+								"checkedInAt": {
+									".validate": "newData.isNumber()"
+								},
+								"sessionId": {
+									".validate": "newData.isString()"
+								}
+							}
+						},
+						"capacity": {
+							".read": true,
+							".write": "auth != null",
+							".validate": "newData.hasChildren(['total', 'used', 'available'])",
+							"total": {
+								".validate": "newData.isNumber() && newData.val() >= 0"
 							},
-							"face": {
-								".validate": "newData.isString() && (newData.val() == 'up' || newData.val() == 'down' || newData.val() == 'left' || newData.val() == 'right')"
+							"used": {
+								".validate": "newData.isNumber() && newData.val() >= 0"
 							},
-							"updatedAt": {
-								".validate": "newData.isNumber()"
+							"available": {
+								".validate": "newData.isNumber() && newData.val() >= 0"
 							}
 						}
 					}
 				},
-				"capacity": {
+				"checkins": {
 					".read": true,
-					".write": "auth != null",
-					"$zoneName": {
-						".validate": "newData.hasChildren(['total', 'used', 'available'])",
-						"total": {
-							".validate": "newData.isNumber() && newData.val() >= 0"
+					".write": true,
+					"$sessionId": {
+						".validate": "newData.hasChildren(['seatId', 'zone', 'outletId', 'checkedInAt', 'sessionId'])",
+						"seatId": {
+							".validate": "newData.isString()"
 						},
-						"used": {
-							".validate": "newData.isNumber() && newData.val() >= 0"
+						"zone": {
+							".validate": "newData.isString()"
 						},
-						"available": {
-							".validate": "newData.isNumber() && newData.val() >= 0"
+						"outletId": {
+							".validate": "newData.isNumber()"
+						},
+						"checkedInAt": {
+							".validate": "newData.isNumber()"
+						},
+						"checkedOutAt": {
+							".validate": "newData.isNumber() || newData.val() == null"
+						},
+						"duration": {
+							".validate": "newData.isNumber() || newData.val() == null"
+						},
+						"sessionId": {
+							".validate": "newData.isString()"
 						}
 					}
 				}

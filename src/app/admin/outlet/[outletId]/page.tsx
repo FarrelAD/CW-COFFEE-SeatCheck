@@ -46,6 +46,50 @@ export default function OutletAdminPage() {
 		activeZone
 	);
 
+	// Merge Firebase seat data with layout structure
+	const mergedLayout = useMemo(() => {
+		if (!layout || seats.length === 0) return layout;
+
+		// Create a copy of the layout
+		const updatedLayout = { ...layout };
+		const areaIndex = layout.layout.findIndex((a) => a.area === activeZone);
+
+		if (areaIndex !== -1) {
+			const areaLayout = layout.layout[areaIndex];
+
+			// Only update if it's a grid layout
+			if ("grid" in areaLayout && areaLayout.grid.length > 0) {
+				// Create a map of seat statuses from Firebase
+				const seatStatusMap = new Map(
+					seats.map((seat) => [seat.id, seat.status])
+				);
+
+				// Update the layout with merged data
+				updatedLayout.layout = [...layout.layout];
+				updatedLayout.layout[areaIndex] = {
+					...areaLayout,
+					metadata: {
+						...areaLayout.metadata,
+						chairs: seats
+							.filter((seat) => seat.type === "chair")
+							.reduce(
+								(acc, seat) => {
+									acc[seat.id] = {
+										status: seat.status,
+										face: seat.face,
+									};
+									return acc;
+								},
+								{} as Record<string, { status?: any; face?: any }>
+							),
+					},
+				};
+			}
+		}
+
+		return updatedLayout;
+	}, [layout, activeZone, seats]);
+
 	// Check access permissions
 	useEffect(() => {
 		if (user && !canAccessOutlet(user, outletId)) {
@@ -143,7 +187,7 @@ export default function OutletAdminPage() {
 						<div className="flex justify-center">
 							<AdminFloorPlan
 								area={activeZone}
-								layout={layout}
+								layout={mergedLayout!}
 								onSeatClick={handleSeatClick}
 							/>
 						</div>
