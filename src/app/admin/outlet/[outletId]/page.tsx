@@ -150,23 +150,31 @@ export default function OutletAdminPage() {
 						</div>
 
 						{/* Legend */}
-						<div className="mt-6 pt-6 border-t border-gray-200">
-							<div className="flex flex-wrap gap-6 justify-center text-sm">
+						<div className="mt-6 pt-6 border-t-2 border-gray-900">
+							<div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
 								<div className="flex items-center gap-2">
-									<div className="w-6 h-6 bg-green-500 rounded"></div>
-									<span className="text-gray-700">Available</span>
+									<div className="w-8 h-8 bg-gray-300 border border-gray-300"></div>
+									<span className="text-sm font-medium text-gray-700">
+										Tersedia
+									</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<div className="w-6 h-6 bg-red-500 rounded"></div>
-									<span className="text-gray-700">Used</span>
+									<div className="w-8 h-8 bg-midnight-blue border border-gray-300"></div>
+									<span className="text-sm font-medium text-gray-700">
+										Terisi
+									</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<div className="w-6 h-6 bg-amber-200 rounded"></div>
-									<span className="text-gray-700">Table</span>
+									<div className="w-8 h-8 bg-[#8B4513] border border-gray-300"></div>
+									<span className="text-sm font-medium text-gray-700">
+										Meja
+									</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<div className="w-6 h-6 bg-gray-200 rounded"></div>
-									<span className="text-gray-700">Walkway</span>
+									<div className="w-8 h-8 bg-white border-2 border-midnight-blue"></div>
+									<span className="text-sm font-medium text-gray-700">
+										Jalan
+									</span>
 								</div>
 							</div>
 						</div>
