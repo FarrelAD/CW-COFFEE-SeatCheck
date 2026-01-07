@@ -1,183 +1,62 @@
 /**
  * TypeScript Type Definitions for CW Coffee SeatCheck
- * Centralized type definitions for the entire application
+ * Centralized barrel export for all type definitions
+ * 
+ * This file re-exports types from domain-specific modules for convenience.
+ * You can import from this file or directly from specific modules:
+ * 
+ * @example
+ * // Import from barrel (recommended for backward compatibility)
+ * import { Block, CheckInRecord, NewsItem } from '@/lib/types';
+ * 
+ * // Import from specific modules (better for tree-shaking)
+ * import { Block } from '@/lib/types/seat';
+ * import { CheckInRecord } from '@/lib/types/checkin';
+ * import { NewsItem } from '@/lib/types/content';
  */
 
 // ============================================================================
-// News Types
+// Admin & Authentication Types
 // ============================================================================
+export type { AdminRole, AdminUser } from "./admin";
 
-export interface NewsItem {
-	id: number;
-	imageUrl: string;
-	title: string;
-	excerpt: string;
-	link: string;
-}
+// ============================================================================
+// Content Types (News, Products, Promos)
+// ============================================================================
+export type { NewsItem, Product, ProductCategory, PromoSlide } from "./content";
 
 // ============================================================================
 // Outlet Types
 // ============================================================================
-
-export interface Outlet {
-	id: number;
-	title: string;
-	address: string;
-	imageUrl: string;
-	slug: string;
-}
+export type { Outlet } from "./outlet";
 
 // ============================================================================
-// Product Types
+// Seat & Layout Types
 // ============================================================================
-
-export interface Product {
-	id: number;
-	imageUrl: string;
-	title: string;
-	link?: string;
-}
-
-export interface ProductCategory {
-	name: string;
-	products: Product[];
-}
-
-// ============================================================================
-// Promo Types
-// ============================================================================
-
-export interface PromoSlide {
-	id: number;
-	imageUrl: string;
-	alt: string;
-	link?: string;
-}
+export type {
+	BlockStatus,
+	BlockType,
+	BlockFace,
+	Block,
+	AreaDimensions,
+	LayoutMetadata,
+	GridAreaLayout,
+	AreaLayout,
+	OutletLayout,
+	SeatData,
+	ZoneSeatData,
+	OutletSeatData,
+	CapacityInfo,
+	ZoneCapacity,
+	OutletCapacityData,
+} from "./seat";
 
 // ============================================================================
-// Seat & Block Types
+// Check-in Types
 // ============================================================================
-
-export type BlockStatus = "available" | "used" | "reserved";
-export type BlockType = "chair" | "table" | "walkway";
-export type BlockFace = "right" | "left" | "down" | "up";
-
-export interface Block {
-	id: string;
-	type: BlockType;
-	status?: BlockStatus;
-	face?: BlockFace;
-}
+export type { SeatQRData, CheckInRecord, CheckInSession } from "./checkin";
 
 // ============================================================================
-// Layout Types
+// Real-time Data Types (Firebase) - Legacy, use seat.ts types instead
 // ============================================================================
-
-export interface AreaDimensions {
-	width: number;
-	height: number;
-}
-
-export interface LayoutMetadata {
-	chairs?: Record<string, { status?: BlockStatus; face?: BlockFace }>;
-	tables?: Record<string, { status?: BlockStatus }>;
-}
-
-export interface GridAreaLayout {
-	area: string;
-	dimensions: AreaDimensions;
-	grid: string[]; // Each string is a row, each character is a block
-	metadata?: LayoutMetadata;
-}
-
-export interface AreaLayout {
-	area: string;
-	blocks: Block[];
-}
-
-export interface OutletLayout {
-	id: number;
-	layout: (AreaLayout | GridAreaLayout)[];
-}
-
-// ============================================================================
-// Outlet Types
-// ============================================================================
-
-export interface Outlet {
-	id: number;
-	title: string;
-	address: string;
-	imageUrl: string;
-	slug: string;
-}
-
-// ============================================================================
-// Real-time Data Types (Firebase)
-// ============================================================================
-
-export interface SeatStatus {
-	status: BlockStatus;
-	face?: BlockFace;
-	updatedAt?: number; // timestamp
-}
-
-export interface ZoneSeatData {
-	[seatId: string]: SeatStatus;
-}
-
-export interface OutletSeatData {
-	[zoneName: string]: ZoneSeatData;
-}
-
-export interface CapacityInfo {
-	total: number;
-	used: number;
-	available: number;
-}
-
-export interface CapacityCardProps {
-	zoneName: string;
-	capacity: CapacityInfo;
-}
-
-// ============================================================================
-// QR Code & Check-in Types
-// ============================================================================
-
-export interface SeatQRData {
-	outletId: number;
-	outletName: string;
-	zone: string;
-	seatId: string;
-	type: 'seat-checkin';
-	version: '1.0';
-}
-
-export interface CheckInRecord {
-	seatId: string;
-	zone: string;
-	outletId: number;
-	checkedInAt: number;
-	checkedOutAt: number | null;
-	duration: number | null;
-	sessionId: string;
-}
-
-export interface CheckInSession {
-	sessionId: string;
-	seatId: string;
-	zone: string;
-	checkedInAt: number;
-	isActive: boolean;
-}
-
-export interface ZoneCapacity {
-	[zoneName: string]: CapacityInfo;
-}
-
-export interface OutletCapacityData {
-	outletId: number;
-	zones: ZoneCapacity;
-	lastUpdated: number; // timestamp
-}
+export type { SeatStatus } from "./seat";

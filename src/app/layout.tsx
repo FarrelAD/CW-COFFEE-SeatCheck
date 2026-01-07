@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Quicksand } from "next/font/google";
 import "./globals.css";
 import ConditionalLayout from "./_components/ConditionalLayout";
+import { AuthProvider } from "@/lib/contexts/AuthContext";
 
 const quicksand = Quicksand({
 	variable: "--font-quicksand",
@@ -30,7 +31,9 @@ export default function RootLayout({
 			<body
 				className={`${roboto.variable} ${quicksand.variable} antialiased font-quicksand! bg-midnight-blue!`}
 			>
-				<ConditionalLayout>{children}</ConditionalLayout>
+				<AuthProvider>
+					<ConditionalLayout>{children}</ConditionalLayout>
+				</AuthProvider>
 			</body>
 		</html>
 	);
