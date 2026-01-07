@@ -139,13 +139,13 @@ export default function OutletAdminPage() {
 	}
 
 	return (
-		<div className="max-w-7xl mx-auto px-4 py-8">
+		<div className="max-w-4xl mx-auto px-4 py-6 pb-24">
 			{/* Page Header */}
 			<div className="mb-6">
-				<h2 className="text-3xl font-bold text-midnight-blue mb-1">
+				<h2 className="text-2xl md:text-3xl font-bold text-midnight-blue mb-1">
 					{outlet.title}
 				</h2>
-				<p className="text-gray-600">{outlet.address}</p>
+				<p className="text-gray-600 text-sm">{outlet.address}</p>
 			</div>
 
 			{/* Zone Selector */}
@@ -167,12 +167,12 @@ export default function OutletAdminPage() {
 			</div>
 
 			{/* Floor Plan */}
-			<div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200">
+			<div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-200">
 				<div className="mb-4">
-					<h3 className="text-lg font-bold text-midnight-blue">
+					<h3 className="text-base md:text-lg font-bold text-midnight-blue">
 						Floor Plan - {activeZone}
 					</h3>
-					<p className="text-sm text-gray-600 mt-1">
+					<p className="text-xs md:text-sm text-gray-600 mt-1">
 						Click on seats to toggle their status
 					</p>
 				</div>
@@ -180,11 +180,11 @@ export default function OutletAdminPage() {
 				{loading ? (
 					<div className="text-center py-12">
 						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-midnight-blue mx-auto mb-4"></div>
-						<p className="text-gray-600">Loading floor plan...</p>
+						<p className="text-gray-600 text-sm">Loading floor plan...</p>
 					</div>
 				) : (
 					<>
-						<div className="flex justify-center">
+						<div className="flex justify-center overflow-x-auto">
 							<AdminFloorPlan
 								area={activeZone}
 								layout={mergedLayout!}
@@ -193,30 +193,37 @@ export default function OutletAdminPage() {
 						</div>
 
 						{/* Legend */}
-						<div className="mt-6 pt-6 border-t-2 border-gray-900">
-							<div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
+						<div className="mt-6 pt-4 border-t-2 border-gray-900">
+							<div className="flex flex-wrap gap-4 md:gap-8 justify-center">
+								{/* Available */}
 								<div className="flex items-center gap-2">
-									<div className="w-8 h-8 bg-gray-300 border border-gray-300"></div>
-									<span className="text-sm font-medium text-gray-700">
-										Tersedia
+									<div className="w-8 h-8 bg-gray-300 border-2 border-gray-900"></div>
+									<span className="text-xs md:text-sm font-medium text-gray-700">
+										Available
 									</span>
 								</div>
+
+								{/* Used */}
 								<div className="flex items-center gap-2">
-									<div className="w-8 h-8 bg-midnight-blue border border-gray-300"></div>
-									<span className="text-sm font-medium text-gray-700">
-										Terisi
+									<div className="w-8 h-8 bg-midnight-blue border-2 border-gray-900"></div>
+									<span className="text-xs md:text-sm font-medium text-gray-700">
+										Used
 									</span>
 								</div>
+
+								{/* Table */}
 								<div className="flex items-center gap-2">
-									<div className="w-8 h-8 bg-[#8B4513] border border-gray-300"></div>
-									<span className="text-sm font-medium text-gray-700">
-										Meja
+									<div className="w-8 h-8 bg-[#8B4513] border-2 border-gray-900"></div>
+									<span className="text-xs md:text-sm font-medium text-gray-700">
+										Table
 									</span>
 								</div>
+
+								{/* Walkway */}
 								<div className="flex items-center gap-2">
 									<div className="w-8 h-8 bg-white border-2 border-midnight-blue"></div>
-									<span className="text-sm font-medium text-gray-700">
-										Jalan
+									<span className="text-xs md:text-sm font-medium text-gray-700">
+										Walkway
 									</span>
 								</div>
 							</div>
