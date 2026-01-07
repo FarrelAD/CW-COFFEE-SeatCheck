@@ -1,17 +1,28 @@
 {
-	"database": {
-		"rules": "database.rules.json"
-	},
-	"hosting": {
-		"source": ".",
-		"ignore": [
-			"firebase.json",
-			"**/.*",
-			"**/node_modules/**"
-		],
-		"frameworksBackend": {
-			"region": "asia-east1",
-			"packageManager": "pnpm"
-		}
-	}
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "hosting": {
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "frameworksBackend": {
+      "region": "asia-east1",
+      "packageManager": "pnpm"
+    }
+  },
+  "apphosting": {
+    "backendId": "cw-coffee-seatcheck",
+    "rootDir": "/",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log",
+      "functions"
+    ]
+  }
 }
