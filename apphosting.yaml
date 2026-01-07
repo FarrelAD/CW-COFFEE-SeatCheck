@@ -1,0 +1,41 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+  # maxInstances: 100
+  # concurrency: 80
+  # cpu: 1
+  # memoryMiB: 512
+
+# Environment variables and secrets.
+env:
+  # Configure environment variables.
+  # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyBR2lLTj-w6TJh6unerqFOW05vJvslqvcw
+  
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: cw-coffee-seat-check.firebaseapp.com
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: cw-coffee-seat-check
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: cw-coffee-seat-check.firebasestorage.app
+
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: 239857977174
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:239857977174:web:edfa7d59ef3fcf531df8f7
+
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-VEH3968G6D
+
+  - variable: NEXT_PUBLIC_FIREBASE_DATABASE_URL
+    value: https://cw-coffee-seat-check-default-rtdb.asia-southeast1.firebasedatabase.app
+
+  # Grant access to secrets in Cloud Secret Manager.
+  # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
+  # - variable: MY_SECRET
+  #   secret: mySecretRef
