@@ -1,12 +1,19 @@
 /**
  * Firebase Authentication Service
- *
- * This file initializes and exports the Firebase Authentication service.
- * Import this module to use Firebase Auth throughout your application.
+ * Provides Firebase Auth instance and helper functions with role-based access control
  */
 
-import { getAuth, type Auth } from "firebase/auth";
+import {
+	getAuth,
+	signInWithEmailAndPassword,
+	signOut as firebaseSignOut,
+	onAuthStateChanged,
+	type Auth,
+	type User,
+} from "firebase/auth";
 import { firebaseApp } from "./app";
+import { getAdminUser } from "../services/admin-service";
+import type { AdminUser } from "../types/admin";
 
 /**
  * Firebase Authentication instance
@@ -15,30 +22,47 @@ import { firebaseApp } from "./app";
 export const auth: Auth = getAuth(firebaseApp);
 
 /**
- * Example helper functions for common auth operations
- * Uncomment and customize as needed
+ * Sign in with email and password
+ * Validates that the user is an authorized admin
  */
+export async function signIn(
+	email: string,
+	password: string
+): Promise<AdminUser> {
+	const userCredential = await signInWithEmailAndPassword(
+		auth,
+		email,
+		password
+	);
+	const adminUser = await getAdminUser(userCredential.user.uid);
 
-// import {
-//   signInWithEmailAndPassword,
-//   createUserWithEmailAndPassword,
-//   signOut as firebaseSignOut,
-//   onAuthStateChanged,
-//   type User,
-// } from 'firebase/auth';
+	if (!adminUser) {
+		await firebaseSignOut(auth);
+		throw new Error("User is not authorized as an admin");
+	}
 
-// export async function signIn(email: string, password: string) {
-//   return signInWithEmailAndPassword(auth, email, password);
-// }
+	return adminUser;
+}
 
-// export async function signUp(email: string, password: string) {
-//   return createUserWithEmailAndPassword(auth, email, password);
-// }
+/**
+ * Sign out current user
+ */
+export async function signOut(): Promise<void> {
+	return firebaseSignOut(auth);
+}
 
-// export async function signOut() {
-//   return firebaseSignOut(auth);
-// }
+/**
+ * Get current authenticated user
+ */
+export function getCurrentUser(): User | null {
+	return auth.currentUser;
+}
 
-// export function onAuthChange(callback: (user: User | null) => void) {
-//   return onAuthStateChanged(auth, callback);
-// }
+/**
+ * Listen to auth state changes
+ */
+export function onAuthChange(
+	callback: (user: User | null) => void
+): () => void {
+	return onAuthStateChanged(auth, callback);
+}

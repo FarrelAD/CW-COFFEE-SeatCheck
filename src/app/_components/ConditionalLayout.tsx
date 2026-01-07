@@ -11,13 +11,15 @@ export default function ConditionalLayout({
 }) {
 	const pathname = usePathname();
 
-	// Check if we're on a dashboard/outlet detail page
+	// Check if we're on a dashboard/outlet detail page or admin page
 	const isDashboardPage =
 		pathname?.startsWith("/category/outlet/") &&
 		pathname !== "/category/outlet";
 
-	if (isDashboardPage) {
-		// Don't render Header and Footer for dashboard pages
+	const isAdminPage = pathname?.startsWith("/admin");
+
+	if (isDashboardPage || isAdminPage) {
+		// Don't render Header and Footer for dashboard and admin pages
 		return <>{children}</>;
 	}
 

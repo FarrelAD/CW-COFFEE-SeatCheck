@@ -136,11 +136,6 @@ export interface CapacityInfo {
 	available: number;
 }
 
-export interface CapacityCardProps {
-	zoneName: string;
-	capacity: CapacityInfo;
-}
-
 // ============================================================================
 // QR Code & Check-in Types
 // ============================================================================

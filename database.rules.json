@@ -2,8 +2,8 @@
 	"rules": {
 		"outlets": {
 			"$outletId": {
-				".read": true,
-				".write": true,
+        ".read": "auth != null",
+        ".write": "auth != null",
 				"seats": {
 					"$zoneName": {
 						"$seatId": {
