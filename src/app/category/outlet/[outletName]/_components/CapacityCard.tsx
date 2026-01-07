@@ -12,8 +12,7 @@ export default function CapacityCard({
 }) {
 	return (
 		<div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-			<h3 className="text-gray-900 font-bold text-lg mb-1">Kapasitas</h3>
-			<p className="text-gray-500 text-sm mb-4">{zoneName}</p>
+			<h3 className="text-gray-900 font-bold text-lg mb-1">{zoneName}</h3>
 
 			{/* Circular Progress */}
 			<CapacityCircle used={used} total={total} />

@@ -3,12 +3,12 @@ export default function FloorPlanLegend() {
 		<div className="flex items-center justify-center gap-8 mt-8 pt-6 border-t-2 border-gray-900">
 			<div className="flex items-center gap-2">
 				<div className="w-8 h-8 bg-gray-300 rounded"></div>
-				<span className="text-sm font-medium text-gray-700">Kosong</span>
+				<span className="text-sm font-medium text-gray-700">Tersedia</span>
 			</div>
 			<div className="flex items-center gap-2">
 				<div className="w-8 h-8 bg-midnight-blue rounded"></div>
 				<span className="text-sm font-medium text-gray-700">
-					Masih Digunakan
+					Terisi
 				</span>
 			</div>
 		</div>

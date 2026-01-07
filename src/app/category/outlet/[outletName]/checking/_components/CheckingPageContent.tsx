@@ -5,6 +5,7 @@ import type { OutletLayout } from "@/lib/types";
 import ZoneTabs from "./ZoneTabs";
 import FloorPlanGrid from "./FloorPlanGrid";
 import FloorPlanLegend from "./FloorPlanLegend";
+import SeatStatus from "./SeatStatus";
 
 export default function CheckingPageContent({
 	layout,
@@ -34,6 +35,9 @@ export default function CheckingPageContent({
 				activeZone={activeZone}
 				onZoneChange={setActiveZone}
 			/>
+
+			{/* Seat Status - Real-time */}
+			<SeatStatus available={50} used={30} />
 
 			{/* Floor Plan */}
 			<div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">

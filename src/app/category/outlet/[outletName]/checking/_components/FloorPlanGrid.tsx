@@ -29,25 +29,27 @@ export default function FloorPlanGrid({
 		<>
 			<h3 className="text-lg font-bold text-gray-900 mb-4">{area}</h3>
 			{/* Dynamic Grid based on area dimensions */}
-			<div className="overflow-x-auto">
-				<div className="inline-block border-2 border-gray-900">
-					{Array.from({ length: dimensions.height }).map((_, rowIndex) => (
-						<div key={`row-${rowIndex}`} className="flex">
-							{Array.from({ length: dimensions.width }).map((_, colIndex) => {
-								const key = `${rowIndex}-${colIndex}`;
-								const block = blocksMap.get(key);
-								return (
-									<GridBlock
-										key={`block-${rowIndex}-${colIndex}`}
-										row={rowIndex}
-										col={colIndex}
-										block={block}
-										blocksMap={blocksMap}
-									/>
-								);
-							})}
-						</div>
-					))}
+			<div className="flex justify-center">
+				<div className="overflow-x-auto max-w-full">
+					<div className="inline-block border-2 border-gray-900">
+						{Array.from({ length: dimensions.height }).map((_, rowIndex) => (
+							<div key={`row-${rowIndex}`} className="flex">
+								{Array.from({ length: dimensions.width }).map((_, colIndex) => {
+									const key = `${rowIndex}-${colIndex}`;
+									const block = blocksMap.get(key);
+									return (
+										<GridBlock
+											key={`block-${rowIndex}-${colIndex}`}
+											row={rowIndex}
+											col={colIndex}
+											block={block}
+											blocksMap={blocksMap}
+										/>
+									);
+								})}
+							</div>
+						))}
+					</div>
 				</div>
 			</div>
 		</>
