@@ -2,14 +2,18 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { useCamera } from "./hooks/useCamera";
 import { useQRScanner } from "./hooks/useQRScanner";
 import { useCheckIn } from "@/lib/hooks/use-checkin";
+import { useGeolocation } from "@/lib/hooks/use-geolocation";
 import { parseSeatQRData } from "@/lib/utils/qr-utils";
+import { getOutletBySlug } from "@/lib/data/outlets";
+import { validateLocationForOutlet } from "@/lib/services/geolocation-service";
 import ScannerFrame from "./ScannerFrame";
 import ScannerControls from "./ScannerControls";
 import ScannerInstructions from "./ScannerInstructions";
-import type { CheckInRecord } from "@/lib/types";
+import type { CheckInRecord, GeoCoordinates } from "@/lib/types";
 
 export default function QRScannerModal({
 	isOpen,
@@ -20,10 +24,25 @@ export default function QRScannerModal({
 	onClose: () => void;
 	onSuccess?: (record: CheckInRecord) => void;
 }) {
+	const params = useParams();
+	const outletSlug = params.outletName as string;
+	const outlet = getOutletBySlug(outletSlug);
+
 	const [scanError, setScanError] = useState<string | null>(null);
+	const [locationValidated, setLocationValidated] = useState(false);
+	const [userLocation, setUserLocation] = useState<GeoCoordinates | null>(null);
 
 	// Camera management
 	const { videoRef, error: cameraError, startCamera, stopCamera } = useCamera();
+
+	// Geolocation management
+	const {
+		position,
+		error: locationError,
+		loading: locationLoading,
+		requestLocation,
+		isSupported: isLocationSupported,
+	} = useGeolocation();
 
 	// Check-in management
 	const {
@@ -64,8 +83,8 @@ export default function QRScannerModal({
 
 			console.log("Performing check-in...");
 
-			// Perform check-in
-			const record = await checkIn(qrData);
+			// Perform check-in with location data
+			const record = await checkIn(qrData, userLocation || undefined);
 
 			// Call success callback
 			if (onSuccess) {
@@ -94,6 +113,11 @@ export default function QRScannerModal({
 	 * Handle scan button toggle
 	 */
 	const handleToggleScan = async () => {
+		// Don't allow scanning if location not validated
+		if (!locationValidated && !isScanning) {
+			return;
+		}
+
 		if (isScanning) {
 			stopScanning();
 			stopCamera();
@@ -153,6 +177,61 @@ export default function QRScannerModal({
 			stopCamera();
 		};
 	}, []);
+	/**
+	 * Request and validate location when modal opens
+	 */
+	useEffect(() => {
+		if (isOpen) {
+			setLocationValidated(false);
+			setUserLocation(null);
+			setScanError(null);
+
+			// Check if location is supported
+			if (!isLocationSupported) {
+				setScanError("Your browser doesn't support location services.");
+				return;
+			}
+
+			// Skip location validation if outlet has no coordinates
+			if (!outlet?.coordinates) {
+				console.log("Outlet has no coordinates, skipping location validation");
+				setLocationValidated(true);
+				return;
+			}
+
+			// Request user location
+			requestLocation()
+				.then((coords) => {
+					console.log("User location:", coords);
+
+					// Validate location
+					const validation = validateLocationForOutlet(
+						coords,
+						outlet.coordinates!,
+						outlet.checkInRadius
+					);
+
+					console.log(
+						`Distance from outlet: ${validation.distance.toFixed(2)}m (limit: ${outlet.checkInRadius || 50}m)`
+					);
+
+					if (validation.valid) {
+						setUserLocation(coords);
+						setLocationValidated(true);
+					} else {
+						setScanError(
+							validation.error || "You must be at the cafe to check in."
+						);
+					}
+				})
+				.catch((err) => {
+					console.error("Location error:", err);
+					const errorMessage =
+						err instanceof Error ? err.message : "Failed to get location";
+					setScanError(errorMessage);
+				});
+		}
+	}, [isOpen, outlet, requestLocation, isLocationSupported]);
 
 	if (!isOpen) return null;
 
@@ -184,18 +263,30 @@ export default function QRScannerModal({
 					</div>
 
 					{/* QR Code Scanner Area */}
-					<ScannerFrame
-						videoRef={videoRef}
-						isScanning={isScanning}
-						error={cameraError || scanError || checkInError}
-						onRetry={handleRetry}
-					/>
+					{locationLoading ? (
+						<div className="bg-white rounded-2xl aspect-square w-full flex items-center justify-center">
+							<div className="text-center">
+								<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-midnight-blue mx-auto mb-4"></div>
+								<p className="text-gray-600 font-medium">
+									Getting your location...
+								</p>
+							</div>
+						</div>
+					) : (
+						<ScannerFrame
+							videoRef={videoRef}
+							isScanning={isScanning}
+							error={cameraError || scanError || checkInError}
+							onRetry={handleRetry}
+						/>
+					)}
 
 					{/* Scan Button */}
 					<ScannerControls
 						isScanning={isScanning || checkInLoading}
 						scannedData={scannedData}
 						onToggleScan={handleToggleScan}
+						disabled={locationLoading || (!locationValidated && !isScanning)}
 					/>
 
 					{/* Instructions */}

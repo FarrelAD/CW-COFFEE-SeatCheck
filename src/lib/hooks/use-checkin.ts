@@ -3,17 +3,20 @@
  * React hook for seat check-in operations
  */
 
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { checkInSeat, canCheckIn } from '@/lib/services/checkin-service';
-import type { SeatQRData, CheckInRecord } from '@/lib/types';
+import { useState } from "react";
+import { checkInSeat, canCheckIn } from "@/lib/services/checkin-service";
+import type { SeatQRData, CheckInRecord, GeoCoordinates } from "@/lib/types";
 
 /**
  * Hook for handling seat check-ins
  */
 export function useCheckIn(): {
-	checkIn: (qrData: SeatQRData) => Promise<CheckInRecord>;
+	checkIn: (
+		qrData: SeatQRData,
+		checkInLocation?: GeoCoordinates
+	) => Promise<CheckInRecord>;
 	loading: boolean;
 	error: string | null;
 	success: boolean;
@@ -23,7 +26,10 @@ export function useCheckIn(): {
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
 
-	const checkIn = async (qrData: SeatQRData): Promise<CheckInRecord> => {
+	const checkIn = async (
+		qrData: SeatQRData,
+		checkInLocation?: GeoCoordinates
+	): Promise<CheckInRecord> => {
 		setLoading(true);
 		setError(null);
 		setSuccess(false);
@@ -37,18 +43,18 @@ export function useCheckIn(): {
 			);
 
 			if (!validation.canCheckIn) {
-				throw new Error(validation.reason || 'Cannot check in to this seat');
+				throw new Error(validation.reason || "Cannot check in to this seat");
 			}
 
-			// Perform check-in
-			const record = await checkInSeat(qrData);
+			// Perform check-in with location data
+			const record = await checkInSeat(qrData, checkInLocation);
 			setSuccess(true);
 			setLoading(false);
 
 			return record;
 		} catch (err) {
 			const errorMessage =
-				err instanceof Error ? err.message : 'Failed to check in';
+				err instanceof Error ? err.message : "Failed to check in";
 			setError(errorMessage);
 			setLoading(false);
 			throw err;

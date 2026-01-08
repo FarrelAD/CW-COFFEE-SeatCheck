@@ -12,8 +12,19 @@ export interface SeatQRData {
 	outletName: string;
 	zone: string;
 	seatId: string;
-	type: 'seat-checkin';
-	version: '1.0';
+	type: "seat-checkin";
+	version: "1.0";
+}
+
+// ============================================================================
+// Geolocation Types
+// ============================================================================
+
+export interface GeoCoordinates {
+	latitude: number;
+	longitude: number;
+	accuracy?: number; // GPS accuracy in meters
+	timestamp: number;
 }
 
 // ============================================================================
@@ -28,6 +39,7 @@ export interface CheckInRecord {
 	checkedOutAt: number | null;
 	duration: number | null;
 	sessionId: string;
+	checkInLocation?: GeoCoordinates;
 }
 
 export interface CheckInSession {

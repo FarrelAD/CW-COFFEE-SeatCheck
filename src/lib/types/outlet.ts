@@ -9,4 +9,9 @@ export interface Outlet {
 	address: string;
 	imageUrl: string;
 	slug: string;
+	coordinates?: {
+		latitude: number;
+		longitude: number;
+	};
+	checkInRadius?: number; // Radius in meters, defaults to 50m if not specified
 }
