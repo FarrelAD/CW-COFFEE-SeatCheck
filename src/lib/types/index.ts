@@ -1,14 +1,14 @@
 /**
  * TypeScript Type Definitions for CW Coffee SeatCheck
  * Centralized barrel export for all type definitions
- * 
+ *
  * This file re-exports types from domain-specific modules for convenience.
  * You can import from this file or directly from specific modules:
- * 
+ *
  * @example
  * // Import from barrel (recommended for backward compatibility)
  * import { Block, CheckInRecord, NewsItem } from '@/lib/types';
- * 
+ *
  * // Import from specific modules (better for tree-shaking)
  * import { Block } from '@/lib/types/seat';
  * import { CheckInRecord } from '@/lib/types/checkin';
@@ -54,7 +54,12 @@ export type {
 // ============================================================================
 // Check-in Types
 // ============================================================================
-export type { SeatQRData, CheckInRecord, CheckInSession } from "./checkin";
+export type {
+	SeatQRData,
+	CheckInRecord,
+	CheckInSession,
+	GeoCoordinates,
+} from "./checkin";
 
 // ============================================================================
 // Real-time Data Types (Firebase) - Legacy, use seat.ts types instead

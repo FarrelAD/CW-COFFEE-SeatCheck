@@ -13,6 +13,11 @@ export const outlets: Outlet[] = [
 			"Jl. Raya Tlogomas No.10, Tlogomas, Kec. Lowokwaru, Kota Malang, Jawa Timur 65144",
 		imageUrl: "/outlets/malang-3.jpg",
 		slug: "outlet-malang-3",
+		coordinates: {
+			latitude: -7.925522145043096,
+			longitude: 112.60026359989985,
+		},
+		checkInRadius: 50, // 50 meters
 	},
 	{
 		id: 2,

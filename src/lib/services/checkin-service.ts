@@ -3,15 +3,23 @@
  * Handles seat check-in/check-out operations with Firebase Realtime Database
  */
 
-import { ref, set, update, get } from 'firebase/database';
-import { getFirebaseDatabase, DB_PATHS } from '@/lib/firebase/database';
-import { generateSessionId } from '@/lib/utils/qr-utils';
-import type { SeatQRData, CheckInRecord, BlockStatus } from '@/lib/types';
+import { ref, set, update, get } from "firebase/database";
+import { getFirebaseDatabase, DB_PATHS } from "@/lib/firebase/database";
+import { generateSessionId } from "@/lib/utils/qr-utils";
+import type {
+	SeatQRData,
+	CheckInRecord,
+	BlockStatus,
+	GeoCoordinates,
+} from "@/lib/types";
 
 /**
  * Check in a seat (mark as used)
  */
-export async function checkInSeat(qrData: SeatQRData): Promise<CheckInRecord> {
+export async function checkInSeat(
+	qrData: SeatQRData,
+	checkInLocation?: GeoCoordinates
+): Promise<CheckInRecord> {
 	const db = getFirebaseDatabase();
 	const { outletId, zone, seatId } = qrData;
 	const sessionId = generateSessionId();
@@ -19,12 +27,19 @@ export async function checkInSeat(qrData: SeatQRData): Promise<CheckInRecord> {
 
 	// Update seat status to 'used' with check-in metadata
 	const seatRef = ref(db, DB_PATHS.seat(outletId, zone, seatId));
-	await update(seatRef, {
-		status: 'used' as BlockStatus,
+	const seatUpdate: Record<string, any> = {
+		status: "used" as BlockStatus,
 		updatedAt: timestamp,
 		checkedInAt: timestamp,
 		sessionId,
-	});
+	};
+
+	// Add location if provided
+	if (checkInLocation) {
+		seatUpdate.checkInLocation = checkInLocation;
+	}
+
+	await update(seatRef, seatUpdate);
 
 	// Create check-in record
 	const checkInRecord: CheckInRecord = {
@@ -35,6 +50,7 @@ export async function checkInSeat(qrData: SeatQRData): Promise<CheckInRecord> {
 		checkedOutAt: null,
 		duration: null,
 		sessionId,
+		checkInLocation,
 	};
 
 	const checkInRef = ref(db, DB_PATHS.checkin(outletId, sessionId));
@@ -61,7 +77,7 @@ export async function checkOutSeat(
 	const checkInData = snapshot.val() as CheckInRecord | null;
 
 	if (!checkInData) {
-		throw new Error('Check-in record not found');
+		throw new Error("Check-in record not found");
 	}
 
 	const duration = timestamp - checkInData.checkedInAt;
@@ -69,7 +85,7 @@ export async function checkOutSeat(
 	// Update seat status to 'available' and clear check-in metadata
 	const seatRef = ref(db, DB_PATHS.seat(outletId, zone, seatId));
 	await update(seatRef, {
-		status: 'available' as BlockStatus,
+		status: "available" as BlockStatus,
 		updatedAt: timestamp,
 		checkedInAt: null,
 		sessionId: null,
@@ -112,11 +128,11 @@ export async function canCheckIn(
 	const status = await getSeatStatus(outletId, zone, seatId);
 
 	if (!status) {
-		return { canCheckIn: false, reason: 'Seat not found' };
+		return { canCheckIn: false, reason: "Seat not found" };
 	}
 
-	if (status.status === 'used') {
-		return { canCheckIn: false, reason: 'Seat is already occupied' };
+	if (status.status === "used") {
+		return { canCheckIn: false, reason: "Seat is already occupied" };
 	}
 
 	return { canCheckIn: true };
