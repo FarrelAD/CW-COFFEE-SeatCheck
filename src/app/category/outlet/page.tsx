@@ -2,7 +2,7 @@
 
 import OutletCard from "@/app/_components/cards/OutletCard";
 import { outlets } from "@/lib/data/outlets";
-import Link from "next/link";
+import InnerHeader from "@/app/_components/InnerHeader";
 import { useState } from "react";
 
 export default function Outlet() {
@@ -24,37 +24,14 @@ export default function Outlet() {
 
 	return (
 		<>
-			{/* Breadcrumb Section */}
-			<div className="bg-white py-6">
-				<div className="container mx-auto px-4 max-w-7xl">
-					<nav className="flex items-center justify-center gap-2 text-sm">
-						<Link
-							href="/"
-							className="text-gray-600 hover:text-[#1a2b4a] transition-colors"
-						>
-							Home
-						</Link>
-						<span className="text-gray-400">›</span>
-						<Link
-							href="/category"
-							className="text-gray-600 hover:text-[#1a2b4a] transition-colors"
-						>
-							Posts
-						</Link>
-						<span className="text-gray-400">›</span>
-						<span className="text-gray-900 font-medium">Outlet</span>
-					</nav>
-				</div>
-			</div>
-
-			{/* Page Title */}
-			<div className="bg-white pb-6">
-				<div className="container mx-auto px-4 max-w-7xl">
-					<h1 className="text-4xl md:text-5xl font-bold text-[#1a2b4a] text-center">
-						Outlet
-					</h1>
-				</div>
-			</div>
+			<InnerHeader
+				breadcrumbs={[
+					{ label: "Home", href: "/" },
+					{ label: "Posts", href: "/category" },
+					{ label: "Outlet" },
+				]}
+				title="Outlet"
+			/>
 
 			{/* Outlet Cards Grid */}
 			<div className="bg-icy-lavender py-12 pb-20">
