@@ -1,9 +1,5 @@
 import { useRef, useState } from "react";
-import {
-	BrowserMultiFormatReader,
-	NotFoundException,
-	Result,
-} from "@zxing/library";
+import type { BrowserMultiFormatReader, Result } from "@zxing/library";
 
 /**
  * Custom hook to manage QR code scanning logic
@@ -11,7 +7,7 @@ import {
 export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	isScanning: boolean;
 	scannedData: string | null;
-	startScanning: (videoElement: HTMLVideoElement) => void;
+	startScanning: (videoElement: HTMLVideoElement) => Promise<void>;
 	stopScanning: () => void;
 	resetScannedData: () => void;
 } {
@@ -57,7 +53,12 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	 * Handle QR code scan error
 	 */
 	const handleQRCodeError = (err: unknown) => {
-		if (!(err instanceof NotFoundException)) {
+		const isNotFound =
+			err &&
+			typeof err === "object" &&
+			"name" in err &&
+			err.name === "NotFoundException";
+		if (!isNotFound) {
 			console.error("QR Scan error:", err);
 		}
 		continueScanning();
@@ -123,13 +124,15 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 		}
 	};
 
-	const startScanning = (videoElement: HTMLVideoElement) => {
+	const startScanning = async (videoElement: HTMLVideoElement) => {
 		setIsScanning(true);
 		isScanningRef.current = true;
 		videoElementRef.current = videoElement;
 
-		// Initialize QR code reader
+		// Initialize QR code reader lazily on demand
 		if (!codeReaderRef.current) {
+			const { BrowserMultiFormatReader } = await import("@zxing/library");
+			if (!isScanningRef.current) return;
 			codeReaderRef.current = new BrowserMultiFormatReader();
 		}
 

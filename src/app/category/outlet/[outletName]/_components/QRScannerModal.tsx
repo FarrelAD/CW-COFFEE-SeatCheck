@@ -64,7 +64,7 @@ export default function QRScannerModal({
 	}
 
 	const startScanningRef = useRef<
-		((videoElement: HTMLVideoElement) => void) | null
+		((videoElement: HTMLVideoElement) => Promise<void> | void) | null
 	>(null);
 
 	// QR Scanner management
