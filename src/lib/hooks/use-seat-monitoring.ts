@@ -3,7 +3,7 @@
  * Custom hook for real-time seat monitoring
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
 	subscribeToOutletSeats,
 	updateSeatStatus as updateSeatStatusService,
@@ -33,16 +33,32 @@ export function useSeatMonitoring(
 		used: 0,
 		available: 0,
 	});
+	const [prevKey, setPrevKey] = useState(`${outletId}-${zoneName}`);
+
+	const currentKey = `${outletId}-${zoneName}`;
+	if (prevKey !== currentKey) {
+		setPrevKey(currentKey);
+		setLoading(true);
+		setSeats([]);
+		setCapacity({ total: 0, used: 0, available: 0 });
+	}
 
 	// Subscribe to real-time seat updates
 	useEffect(() => {
-		setLoading(true);
-
 		const unsubscribe = subscribeToOutletSeats(
 			outletId,
 			zoneName,
 			(updatedSeats) => {
 				setSeats(updatedSeats);
+				const total = updatedSeats.length;
+				const used = updatedSeats.filter(
+					(seat) => seat.status === "used"
+				).length;
+				setCapacity({
+					total,
+					used,
+					available: total - used,
+				});
 				setLoading(false);
 			}
 		);
@@ -52,21 +68,14 @@ export function useSeatMonitoring(
 	}, [outletId, zoneName]);
 
 	// Fetch capacity statistics
-	const refreshCapacity = async () => {
+	const refreshCapacity = useCallback(async () => {
 		try {
 			const stats = await getOutletCapacity(outletId, zoneName);
 			setCapacity(stats);
 		} catch (error) {
 			console.error("Error refreshing capacity:", error);
 		}
-	};
-
-	// Refresh capacity when seats change
-	useEffect(() => {
-		if (!loading) {
-			refreshCapacity();
-		}
-	}, [seats, loading]);
+	}, [outletId, zoneName]);
 
 	// Update seat status
 	const updateSeatStatus = async (

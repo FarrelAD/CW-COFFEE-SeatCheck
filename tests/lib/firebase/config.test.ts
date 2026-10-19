@@ -33,14 +33,15 @@ describe("Firebase Configuration", () => {
 
 			// Temporarily remove a required field
 			const originalApiKey = firebaseConfig.apiKey;
-			(firebaseConfig as any).apiKey = undefined;
+			(firebaseConfig as Record<string, string | undefined>).apiKey = undefined;
 
 			validateFirebaseConfig();
 
 			expect(consoleSpy).toHaveBeenCalled();
 
 			// Restore the field
-			(firebaseConfig as any).apiKey = originalApiKey;
+			(firebaseConfig as Record<string, string | undefined>).apiKey =
+				originalApiKey;
 			consoleSpy.mockRestore();
 		});
 	});

@@ -23,25 +23,34 @@ export function useSeatData(
 	const [seatData, setSeatData] = useState<ZoneSeatData | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
+	const [prevKey, setPrevKey] = useState(`${outletId}-${zoneName}`);
 
-	useEffect(() => {
+	const currentKey = `${outletId}-${zoneName}`;
+	if (prevKey !== currentKey) {
+		setPrevKey(currentKey);
 		setLoading(true);
 		setError(null);
+		setSeatData(null);
+	}
 
-		try {
-			const unsubscribe = subscribeToZoneSeats(outletId, zoneName, (data) => {
+	useEffect(() => {
+		const unsubscribe = subscribeToZoneSeats(
+			outletId,
+			zoneName,
+			(data) => {
 				setSeatData(data);
 				setLoading(false);
-			});
+			},
+			(err) => {
+				setError(err);
+				setLoading(false);
+			}
+		);
 
-			// Cleanup subscription on unmount
-			return () => {
-				unsubscribe();
-			};
-		} catch (err) {
-			setError(err instanceof Error ? err : new Error("Unknown error"));
-			setLoading(false);
-		}
+		// Cleanup subscription on unmount
+		return () => {
+			unsubscribe();
+		};
 	}, [outletId, zoneName]);
 
 	return { seatData, loading, error };

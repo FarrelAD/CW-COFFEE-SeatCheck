@@ -93,7 +93,7 @@ export default function SeedDataPage() {
 						Seed Single Zone
 					</h2>
 					<p className="text-gray-600 text-sm mb-4">
-						Initialize "Zona AC 1" for Outlet Malang 3
+						Initialize &quot;Zona AC 1&quot; for Outlet Malang 3
 					</p>
 					<button
 						onClick={handleSeedZone}

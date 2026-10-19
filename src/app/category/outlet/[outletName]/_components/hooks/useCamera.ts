@@ -33,48 +33,51 @@ export function useCamera(): {
 				videoRef.current.srcObject = stream;
 				await videoRef.current.play();
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Camera access error:", err);
 			setIsActive(false);
 
+			const errorName = err instanceof Error ? err.name : "";
+			const errorMessage = err instanceof Error ? err.message : "";
+
 			// Handle specific error types
 			if (
-				err.name === "NotAllowedError" ||
-				err.name === "PermissionDeniedError"
+				errorName === "NotAllowedError" ||
+				errorName === "PermissionDeniedError"
 			) {
 				setError(
 					"Camera permission denied. Please allow camera access in your browser settings and try again."
 				);
 			} else if (
-				err.name === "NotFoundError" ||
-				err.name === "DevicesNotFoundError"
+				errorName === "NotFoundError" ||
+				errorName === "DevicesNotFoundError"
 			) {
 				setError(
 					"No camera found on this device. Please ensure your device has a camera."
 				);
 			} else if (
-				err.name === "NotReadableError" ||
-				err.name === "TrackStartError"
+				errorName === "NotReadableError" ||
+				errorName === "TrackStartError"
 			) {
 				setError(
 					"Camera is already in use by another application. Please close other apps using the camera."
 				);
 			} else if (
-				err.name === "OverconstrainedError" ||
-				err.name === "ConstraintNotSatisfiedError"
+				errorName === "OverconstrainedError" ||
+				errorName === "ConstraintNotSatisfiedError"
 			) {
 				setError(
 					"Camera does not meet requirements. Trying with default camera..."
 				);
 				// Retry with default camera settings
 				setTimeout(() => retryWithDefault(), 1000);
-			} else if (err.name === "SecurityError") {
+			} else if (errorName === "SecurityError") {
 				setError(
 					"Camera access blocked due to security settings. Please use HTTPS or check browser settings."
 				);
 			} else {
 				setError(
-					err.message ||
+					errorMessage ||
 						"Unable to access camera. Please check your browser permissions and try again."
 				);
 			}
@@ -94,7 +97,7 @@ export function useCamera(): {
 				videoRef.current.srcObject = stream;
 				await videoRef.current.play();
 			}
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Retry camera access error:", err);
 			setIsActive(false);
 			setError(
