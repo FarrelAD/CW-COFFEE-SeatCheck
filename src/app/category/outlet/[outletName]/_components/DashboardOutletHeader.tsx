@@ -3,12 +3,18 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
+import { useParams, usePathname } from "next/navigation";
 import { QrCode } from "lucide-react";
-import QRScannerModal from "./QRScannerModal";
-import SuccessCheckinModal from "./SuccessCheckinModal";
 import type { CheckInRecord } from "@/lib/types";
+
+const QRScannerModal = dynamic(() => import("./QRScannerModal"), {
+	ssr: false,
+});
+
+const SuccessCheckinModal = dynamic(() => import("./SuccessCheckinModal"), {
+	ssr: false,
+});
 
 export default function DashboardOutletHeader() {
 	const params = useParams();
@@ -73,28 +79,32 @@ export default function DashboardOutletHeader() {
 			</header>
 
 			{/* QR Scanner Modal */}
-			<QRScannerModal
-				isOpen={isQRModalOpen}
-				onClose={() => setIsQRModalOpen(false)}
-				onSuccess={(record) => {
-					console.log("Check-in record:", record);
-					// Close scanner modal
-					setIsQRModalOpen(false);
-					// Set check-in record and show success modal
-					setCheckInRecord(record);
-					setShowSuccessModal(true);
-				}}
-			/>
+			{isQRModalOpen ? (
+				<QRScannerModal
+					isOpen={isQRModalOpen}
+					onClose={() => setIsQRModalOpen(false)}
+					onSuccess={(record) => {
+						console.log("Check-in record:", record);
+						// Close scanner modal
+						setIsQRModalOpen(false);
+						// Set check-in record and show success modal
+						setCheckInRecord(record);
+						setShowSuccessModal(true);
+					}}
+				/>
+			) : null}
 
 			{/* Success Check-in Modal */}
-			<SuccessCheckinModal
-				isOpen={showSuccessModal}
-				checkInRecord={checkInRecord}
-				onClose={() => {
-					setShowSuccessModal(false);
-					setCheckInRecord(null);
-				}}
-			/>
+			{showSuccessModal ? (
+				<SuccessCheckinModal
+					isOpen={showSuccessModal}
+					checkInRecord={checkInRecord}
+					onClose={() => {
+						setShowSuccessModal(false);
+						setCheckInRecord(null);
+					}}
+				/>
+			) : null}
 		</>
 	);
 }
