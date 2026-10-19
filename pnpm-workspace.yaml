@@ -1,5 +1,10 @@
 packages:
   - .
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+auditConfig: {}
+allowBuilds:
+  "@firebase/util": true
+  cypress: true
+  esbuild: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true

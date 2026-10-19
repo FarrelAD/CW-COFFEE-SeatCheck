@@ -4,9 +4,7 @@ import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
 /**
  * Custom hook to manage QR code scanning logic
  */
-export function useQRScanner(
-	onScan?: (data: string) => void | Promise<void>
-): {
+export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	isScanning: boolean;
 	scannedData: string | null;
 	startScanning: (videoElement: HTMLVideoElement) => void;

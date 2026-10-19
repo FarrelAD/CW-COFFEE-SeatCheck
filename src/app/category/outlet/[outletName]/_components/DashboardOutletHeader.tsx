@@ -27,7 +27,7 @@ export default function DashboardOutletHeader() {
 					{/* Navigation */}
 					<div className="flex items-center justify-between">
 						{/* Logo */}
-						<a href="/" className="flex items-center gap-2">
+						<Link href="/" className="flex items-center gap-2">
 							<Image
 								src="/logo-cw-200.png"
 								alt="CW Coffee"
@@ -43,7 +43,7 @@ export default function DashboardOutletHeader() {
 									Coffee
 								</span>
 							</div>
-						</a>
+						</Link>
 
 						{/* Nav Links */}
 						<div className="flex items-center gap-6">

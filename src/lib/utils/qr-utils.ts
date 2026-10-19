@@ -3,7 +3,7 @@
  * Functions for generating and validating seat check-in QR codes
  */
 
-import type { SeatQRData } from '@/lib/types';
+import type { SeatQRData } from "@/lib/types";
 
 /**
  * Generate QR data for a seat
@@ -19,8 +19,8 @@ export function generateSeatQRData(
 		outletName,
 		zone,
 		seatId,
-		type: 'seat-checkin',
-		version: '1.0',
+		type: "seat-checkin",
+		version: "1.0",
 	};
 }
 
@@ -41,19 +41,19 @@ export function generateSeatQRString(
  * Validate QR data structure
  */
 export function validateQRData(data: unknown): data is SeatQRData {
-	if (!data || typeof data !== 'object') {
+	if (!data || typeof data !== "object") {
 		return false;
 	}
 
 	const qr = data as Partial<SeatQRData>;
 
 	return (
-		typeof qr.outletId === 'number' &&
-		typeof qr.outletName === 'string' &&
-		typeof qr.zone === 'string' &&
-		typeof qr.seatId === 'string' &&
-		qr.type === 'seat-checkin' &&
-		qr.version === '1.0'
+		typeof qr.outletId === "number" &&
+		typeof qr.outletName === "string" &&
+		typeof qr.zone === "string" &&
+		typeof qr.seatId === "string" &&
+		qr.type === "seat-checkin" &&
+		qr.version === "1.0"
 	);
 }
 
@@ -70,7 +70,7 @@ export function parseSeatQRData(qrString: string): SeatQRData | null {
 
 		return data;
 	} catch (error) {
-		console.error('Failed to parse QR data:', error);
+		console.error("Failed to parse QR data:", error);
 		return null;
 	}
 }
