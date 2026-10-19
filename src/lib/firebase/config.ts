@@ -36,7 +36,7 @@ export function validateFirebaseConfig(): void {
 	if (missingFields.length > 0) {
 		console.warn(
 			`Missing Firebase configuration fields: ${missingFields.join(", ")}. ` +
-			"Please check your .env.local file."
+				"Please check your .env.local file."
 		);
 	}
 }

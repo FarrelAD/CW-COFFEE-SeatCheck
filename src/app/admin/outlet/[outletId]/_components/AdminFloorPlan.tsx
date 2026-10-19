@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Armchair } from "lucide-react";
 import type { Block, OutletLayout } from "@/lib/types";
 import { parseGridLayout } from "@/lib/data/outlet-layouts";

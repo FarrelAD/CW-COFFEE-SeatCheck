@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
-// const isProd = process.env.NODE_ENV === "production";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const nextConfig: NextConfig = {
-	output: "standalone",
-	// basePath: isProd ? "/CW-COFFEE-SeatCheck" : "",
-	// assetPrefix: isProd ? "/CW-COFFEE-SeatCheck" : "",
+	output: "export",
+	basePath: basePath || undefined,
+	assetPrefix: basePath || undefined,
+	trailingSlash: true,
 	images: {
 		unoptimized: true,
 	},

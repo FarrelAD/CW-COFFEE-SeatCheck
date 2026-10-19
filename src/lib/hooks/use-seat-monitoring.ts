@@ -15,7 +15,10 @@ interface UseSeatMonitoringReturn {
 	seats: Block[];
 	loading: boolean;
 	capacity: { total: number; used: number; available: number };
-	updateSeatStatus: (seatId: string, status: "available" | "used") => Promise<void>;
+	updateSeatStatus: (
+		seatId: string,
+		status: "available" | "used"
+	) => Promise<void>;
 	refreshCapacity: () => Promise<void>;
 }
 
@@ -35,10 +38,14 @@ export function useSeatMonitoring(
 	useEffect(() => {
 		setLoading(true);
 
-		const unsubscribe = subscribeToOutletSeats(outletId, zoneName, (updatedSeats) => {
-			setSeats(updatedSeats);
-			setLoading(false);
-		});
+		const unsubscribe = subscribeToOutletSeats(
+			outletId,
+			zoneName,
+			(updatedSeats) => {
+				setSeats(updatedSeats);
+				setLoading(false);
+			}
+		);
 
 		// Cleanup subscription on unmount
 		return () => unsubscribe();

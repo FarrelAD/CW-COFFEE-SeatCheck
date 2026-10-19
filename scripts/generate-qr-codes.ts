@@ -3,15 +3,15 @@
  * Generates QR codes for all seats in all outlets
  */
 
-import * as QRCode from 'qrcode';
-import { mkdirSync, existsSync } from 'fs';
-import { join } from 'path';
-import { outlets } from '../src/lib/data/outlets';
-import { outletLayouts, parseGridLayout } from '../src/lib/data/outlet-layouts';
-import { generateSeatQRString } from '../src/lib/utils/qr-utils';
-import type { GridAreaLayout } from '../src/lib/types';
+import * as QRCode from "qrcode";
+import { mkdirSync, existsSync } from "fs";
+import { join } from "path";
+import { outlets } from "../src/lib/data/outlets";
+import { outletLayouts, parseGridLayout } from "../src/lib/data/outlet-layouts";
+import { generateSeatQRString } from "../src/lib/utils/qr-utils";
+import type { GridAreaLayout } from "../src/lib/types";
 
-const OUTPUT_DIR = join(process.cwd(), 'qr-codes');
+const OUTPUT_DIR = join(process.cwd(), "qr-codes");
 
 /**
  * Generate QR code for a single seat
@@ -30,8 +30,8 @@ async function generateSeatQR(
 		width: 300,
 		margin: 2,
 		color: {
-			dark: '#0a2463', // CW Coffee brand color
-			light: '#FFFFFF',
+			dark: "#0a2463", // CW Coffee brand color
+			light: "#FFFFFF",
 		},
 	});
 
@@ -63,7 +63,7 @@ async function generateOutletQRCodes(outletId: number): Promise<void> {
 		const zoneName = zoneLayout.area;
 
 		// Skip zones without grid data
-		if (!('grid' in zoneLayout) || zoneLayout.grid.length === 0) {
+		if (!("grid" in zoneLayout) || zoneLayout.grid.length === 0) {
 			console.log(`  ⏭️  Skipping ${zoneName} (no layout data)`);
 			continue;
 		}
@@ -71,14 +71,14 @@ async function generateOutletQRCodes(outletId: number): Promise<void> {
 		console.log(`  📋 Processing ${zoneName}...`);
 
 		// Create zone directory
-		const zoneDir = join(outletDir, zoneName.replace(/\s+/g, '-'));
+		const zoneDir = join(outletDir, zoneName.replace(/\s+/g, "-"));
 		if (!existsSync(zoneDir)) {
 			mkdirSync(zoneDir, { recursive: true });
 		}
 
 		// Parse grid to get all seats
 		const blocks = parseGridLayout(zoneLayout as GridAreaLayout);
-		const chairs = blocks.filter((block) => block.type === 'chair');
+		const chairs = blocks.filter((block) => block.type === "chair");
 
 		// Generate QR for each chair
 		for (const chair of chairs) {
@@ -100,7 +100,7 @@ async function generateOutletQRCodes(outletId: number): Promise<void> {
  * Generate QR codes for all outlets
  */
 async function generateAllQRCodes(): Promise<void> {
-	console.log('🚀 Starting QR code generation...\n');
+	console.log("🚀 Starting QR code generation...\n");
 
 	// Create output directory
 	if (!existsSync(OUTPUT_DIR)) {
@@ -112,7 +112,10 @@ async function generateAllQRCodes(): Promise<void> {
 		try {
 			await generateOutletQRCodes(outlet.id);
 		} catch (error) {
-			console.error(`❌ Error generating QR codes for outlet ${outlet.id}:`, error);
+			console.error(
+				`❌ Error generating QR codes for outlet ${outlet.id}:`,
+				error
+			);
 		}
 	}
 
@@ -126,6 +129,6 @@ async function generateAllQRCodes(): Promise<void> {
 
 // Run the generator
 generateAllQRCodes().catch((error) => {
-	console.error('❌ Fatal error:', error);
+	console.error("❌ Fatal error:", error);
 	process.exit(1);
 });

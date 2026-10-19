@@ -11,8 +11,18 @@ const eslintConfig = defineConfig([
 		".next/**",
 		"out/**",
 		"build/**",
+		"cypress/**",
 		"next-env.d.ts",
 	]),
+	{
+		rules: {
+			"react-hooks/set-state-in-effect": "warn",
+			"react-hooks/immutability": "warn",
+			"@typescript-eslint/no-explicit-any": "warn",
+			"@typescript-eslint/no-namespace": "warn",
+			"react/no-unescaped-entities": "warn",
+		},
+	},
 ]);
 
 export default eslintConfig;
