@@ -1,10 +1,10 @@
 packages:
   - .
 auditConfig: {}
-onlyBuiltDependencies:
-  - "@firebase/util"
-  - cypress
-  - esbuild
-  - protobufjs
-  - sharp
-  - unrs-resolver
+allowBuilds:
+  "@firebase/util": true
+  cypress: true
+  esbuild: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
