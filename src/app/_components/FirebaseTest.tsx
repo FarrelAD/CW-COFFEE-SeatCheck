@@ -12,42 +12,38 @@ import { auth, db, storage } from "@/lib/firebase";
 import type { User } from "firebase/auth";
 
 export default function FirebaseTest() {
-	const [firebaseStatus, setFirebaseStatus] = useState<{
+	const [firebaseStatus] = useState<{
 		auth: boolean;
 		firestore: boolean;
 		storage: boolean;
 		user: User | null;
-	}>({
-		auth: false,
-		firestore: false,
-		storage: false,
-		user: null,
+	}>(() => {
+		try {
+			return {
+				auth: !!auth,
+				firestore: !!db,
+				storage: !!storage,
+				user: auth?.currentUser ?? null,
+			};
+		} catch {
+			return {
+				auth: false,
+				firestore: false,
+				storage: false,
+				user: null,
+			};
+		}
 	});
 
 	useEffect(() => {
-		// Test Firebase initialization
-		try {
-			// Check if Firebase services are initialized
-			const authInitialized = !!auth;
-			const firestoreInitialized = !!db;
-			const storageInitialized = !!storage;
-
-			setFirebaseStatus({
-				auth: authInitialized,
-				firestore: firestoreInitialized,
-				storage: storageInitialized,
-				user: auth.currentUser,
-			});
-
-			console.log("Firebase Status:", {
-				auth: authInitialized ? "✓ Initialized" : "✗ Not initialized",
-				firestore: firestoreInitialized ? "✓ Initialized" : "✗ Not initialized",
-				storage: storageInitialized ? "✓ Initialized" : "✗ Not initialized",
-			});
-		} catch (error) {
-			console.error("Firebase initialization error:", error);
-		}
-	}, []);
+		console.log("Firebase Status:", {
+			auth: firebaseStatus.auth ? "✓ Initialized" : "✗ Not initialized",
+			firestore: firebaseStatus.firestore
+				? "✓ Initialized"
+				: "✗ Not initialized",
+			storage: firebaseStatus.storage ? "✓ Initialized" : "✗ Not initialized",
+		});
+	}, [firebaseStatus]);
 
 	return (
 		<div

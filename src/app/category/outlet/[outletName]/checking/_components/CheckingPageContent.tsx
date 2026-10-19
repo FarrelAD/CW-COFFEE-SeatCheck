@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import type { OutletLayout, Block } from "@/lib/types";
+import { useState, useMemo } from "react";
+import type { OutletLayout, BlockStatus, BlockFace } from "@/lib/types";
 import { useSeatData } from "@/lib/hooks/use-seat-data";
 import { parseGridLayout } from "@/lib/data/outlet-layouts";
 import ZoneTabs from "./ZoneTabs";
@@ -20,14 +20,9 @@ export default function CheckingPageContent({
 	}, [layout]);
 
 	// Set first area as default active zone
-	const [activeZone, setActiveZone] = useState("");
-
-	// Update active zone when areas are loaded
-	useEffect(() => {
-		if (availableAreas.length > 0 && !activeZone) {
-			setActiveZone(availableAreas[0]);
-		}
-	}, [availableAreas, activeZone]);
+	const [selectedZone, setSelectedZone] = useState<string>("");
+	const activeZone =
+		selectedZone || (availableAreas.length > 0 ? availableAreas[0] : "");
 
 	// Subscribe to real-time seat data from Firebase
 	const { seatData, loading } = useSeatData(layout.id, activeZone);
@@ -76,7 +71,7 @@ export default function CheckingPageContent({
 								}
 								return acc;
 							},
-							{} as Record<string, { status?: any; face?: any }>
+							{} as Record<string, { status?: BlockStatus; face?: BlockFace }>
 						),
 					},
 				};
@@ -106,7 +101,7 @@ export default function CheckingPageContent({
 			<ZoneTabs
 				zones={availableAreas}
 				activeZone={activeZone}
-				onZoneChange={setActiveZone}
+				onZoneChange={setSelectedZone}
 			/>
 
 			{/* Seat Status - Real-time from Firebase */}

@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
-import { BrowserMultiFormatReader, NotFoundException } from "@zxing/library";
+import {
+	BrowserMultiFormatReader,
+	NotFoundException,
+	Result,
+} from "@zxing/library";
 
 /**
  * Custom hook to manage QR code scanning logic
@@ -17,6 +21,7 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 	const animationFrameRef = useRef<number | null>(null);
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
+	const videoElementRef = useRef<HTMLVideoElement | null>(null);
 
 	/**
 	 * Continue scanning on next animation frame
@@ -30,7 +35,7 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	/**
 	 * Handle QR code scan result
 	 */
-	const handleQRCodeResult = async (result: any) => {
+	const handleQRCodeResult = async (result: Result | null) => {
 		if (!result) {
 			continueScanning();
 			return;
@@ -51,7 +56,7 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	/**
 	 * Handle QR code scan error
 	 */
-	const handleQRCodeError = (err: any) => {
+	const handleQRCodeError = (err: unknown) => {
 		if (!(err instanceof NotFoundException)) {
 			console.error("QR Scan error:", err);
 		}
@@ -100,9 +105,7 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 			return;
 		}
 
-		const video = codeReaderRef.current as any;
-		const videoElement = video._video;
-
+		const videoElement = videoElementRef.current;
 		if (!videoElement) return;
 
 		// Wait for video to be ready
@@ -123,14 +126,12 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 	const startScanning = (videoElement: HTMLVideoElement) => {
 		setIsScanning(true);
 		isScanningRef.current = true;
+		videoElementRef.current = videoElement;
 
 		// Initialize QR code reader
 		if (!codeReaderRef.current) {
 			codeReaderRef.current = new BrowserMultiFormatReader();
 		}
-
-		// Store video element reference for scanning
-		(codeReaderRef.current as any)._video = videoElement;
 
 		// Start scanning loop
 		scanQRCode();
@@ -148,6 +149,7 @@ export function useQRScanner(onScan?: (data: string) => void | Promise<void>): {
 			codeReaderRef.current.reset();
 		}
 
+		videoElementRef.current = null;
 		setIsScanning(false);
 		isScanningRef.current = false;
 	};

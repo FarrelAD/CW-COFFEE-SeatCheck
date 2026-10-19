@@ -27,7 +27,7 @@ export async function checkInSeat(
 
 	// Update seat status to 'used' with check-in metadata
 	const seatRef = ref(db, DB_PATHS.seat(outletId, zone, seatId));
-	const seatUpdate: Record<string, any> = {
+	const seatUpdate: Record<string, unknown> = {
 		status: "used" as BlockStatus,
 		updatedAt: timestamp,
 		checkedInAt: timestamp,

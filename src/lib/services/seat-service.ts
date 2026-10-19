@@ -14,14 +14,12 @@ import {
 } from "firebase/database";
 import { getFirebaseDatabase, DB_PATHS } from "@/lib/firebase/database";
 import type {
-	OutletSeatData,
 	ZoneSeatData,
 	SeatData,
 	SeatStatus,
 	BlockStatus,
 	BlockType,
 	BlockFace,
-	OutletCapacityData,
 	CapacityInfo,
 } from "@/lib/types";
 
@@ -31,15 +29,26 @@ import type {
 export function subscribeToZoneSeats(
 	outletId: number,
 	zoneName: string,
-	callback: (data: ZoneSeatData | null) => void
+	callback: (data: ZoneSeatData | null) => void,
+	onError?: (error: Error) => void
 ): Unsubscribe {
 	const db = getFirebaseDatabase();
 	const zoneRef = ref(db, DB_PATHS.zoneSeats(outletId, zoneName));
 
-	return onValue(zoneRef, (snapshot: DataSnapshot) => {
-		const data = snapshot.val();
-		callback(data);
-	});
+	return onValue(
+		zoneRef,
+		(snapshot: DataSnapshot) => {
+			const data = snapshot.val();
+			callback(data);
+		},
+		(error) => {
+			if (onError) {
+				onError(error);
+			} else {
+				console.error("Error subscribing to zone seats:", error);
+			}
+		}
+	);
 }
 
 /**

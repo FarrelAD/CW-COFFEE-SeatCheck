@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { Outlet } from "@/lib/types";
 
@@ -14,11 +15,13 @@ export default function OutletCard({ outlet }: { outlet: Outlet }) {
 			className="block bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow overflow-hidden group"
 		>
 			{/* Outlet Image */}
-			<div className="aspect-video bg-gray-200 overflow-hidden">
-				<img
+			<div className="relative aspect-video bg-gray-200 overflow-hidden">
+				<Image
 					src={outlet.imageUrl}
 					alt={outlet.title}
-					className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+					fill
+					className="object-cover group-hover:scale-105 transition-transform duration-300"
+					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 				/>
 			</div>
 

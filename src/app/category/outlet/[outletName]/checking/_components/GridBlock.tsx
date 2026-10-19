@@ -12,8 +12,6 @@ export default function GridBlock({
 	block?: Block;
 	blocksMap: Map<string, Block>;
 }) {
-	const key = `${row}-${col}`;
-
 	if (block && block.type === "chair") {
 		// Render chair with Armchair icon
 		const bgColor = block.status === "used" ? "bg-[#0a2463]" : "bg-gray-300";

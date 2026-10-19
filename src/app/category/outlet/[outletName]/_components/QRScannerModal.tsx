@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useCamera } from "./hooks/useCamera";
 import { useQRScanner } from "./hooks/useQRScanner";
@@ -31,14 +31,13 @@ export default function QRScannerModal({
 	const [scanError, setScanError] = useState<string | null>(null);
 	const [locationValidated, setLocationValidated] = useState(false);
 	const [userLocation, setUserLocation] = useState<GeoCoordinates | null>(null);
+	const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
 	// Camera management
 	const { videoRef, error: cameraError, startCamera, stopCamera } = useCamera();
 
 	// Geolocation management
 	const {
-		position,
-		error: locationError,
 		loading: locationLoading,
 		requestLocation,
 		isSupported: isLocationSupported,
@@ -51,6 +50,23 @@ export default function QRScannerModal({
 		error: checkInError,
 	} = useCheckIn();
 
+	if (!prevIsOpen && isOpen) {
+		setPrevIsOpen(true);
+		setLocationValidated(!outlet?.coordinates);
+		setUserLocation(null);
+		setScanError(
+			!isLocationSupported
+				? "Your browser doesn't support location services."
+				: null
+		);
+	} else if (prevIsOpen && !isOpen) {
+		setPrevIsOpen(false);
+	}
+
+	const startScanningRef = useRef<
+		((videoElement: HTMLVideoElement) => void) | null
+	>(null);
+
 	// QR Scanner management
 	const {
 		isScanning,
@@ -59,8 +75,7 @@ export default function QRScannerModal({
 		stopScanning,
 		resetScannedData,
 	} = useQRScanner(async (data) => {
-		// Stop scanning and camera
-		stopScanning();
+		// Stop camera
 		stopCamera();
 		setScanError(null);
 
@@ -74,8 +89,8 @@ export default function QRScannerModal({
 				// Restart camera for retry
 				setTimeout(async () => {
 					await startCamera();
-					if (videoRef.current) {
-						startScanning(videoRef.current);
+					if (videoRef.current && startScanningRef.current) {
+						startScanningRef.current(videoRef.current);
 					}
 				}, 2000);
 				return;
@@ -102,8 +117,8 @@ export default function QRScannerModal({
 			// Restart camera for retry after error
 			setTimeout(async () => {
 				await startCamera();
-				if (videoRef.current) {
-					startScanning(videoRef.current);
+				if (videoRef.current && startScanningRef.current) {
+					startScanningRef.current(videoRef.current);
 				}
 			}, 2000);
 		}
@@ -139,15 +154,19 @@ export default function QRScannerModal({
 		}
 	};
 
+	useEffect(() => {
+		startScanningRef.current = startScanning;
+	}, [startScanning]);
+
 	/**
 	 * Handle modal close
 	 */
-	const handleClose = () => {
+	const handleClose = useCallback(() => {
 		stopScanning();
 		stopCamera();
 		resetScannedData();
 		onClose();
-	};
+	}, [stopScanning, stopCamera, resetScannedData, onClose]);
 
 	/**
 	 * Handle escape key press
@@ -166,7 +185,7 @@ export default function QRScannerModal({
 			document.removeEventListener("keydown", handleEscape);
 			document.body.style.overflow = "unset";
 		};
-	}, [isOpen]);
+	}, [isOpen, handleClose]);
 
 	/**
 	 * Cleanup on unmount
@@ -176,61 +195,46 @@ export default function QRScannerModal({
 			stopScanning();
 			stopCamera();
 		};
-	}, []);
+	}, [stopScanning, stopCamera]);
 	/**
 	 * Request and validate location when modal opens
 	 */
 	useEffect(() => {
-		if (isOpen) {
-			setLocationValidated(false);
-			setUserLocation(null);
-			setScanError(null);
-
-			// Check if location is supported
-			if (!isLocationSupported) {
-				setScanError("Your browser doesn't support location services.");
-				return;
-			}
-
-			// Skip location validation if outlet has no coordinates
-			if (!outlet?.coordinates) {
-				console.log("Outlet has no coordinates, skipping location validation");
-				setLocationValidated(true);
-				return;
-			}
-
-			// Request user location
-			requestLocation()
-				.then((coords) => {
-					console.log("User location:", coords);
-
-					// Validate location
-					const validation = validateLocationForOutlet(
-						coords,
-						outlet.coordinates!,
-						outlet.checkInRadius
-					);
-
-					console.log(
-						`Distance from outlet: ${validation.distance.toFixed(2)}m (limit: ${outlet.checkInRadius || 50}m)`
-					);
-
-					if (validation.valid) {
-						setUserLocation(coords);
-						setLocationValidated(true);
-					} else {
-						setScanError(
-							validation.error || "You must be at the cafe to check in."
-						);
-					}
-				})
-				.catch((err) => {
-					console.error("Location error:", err);
-					const errorMessage =
-						err instanceof Error ? err.message : "Failed to get location";
-					setScanError(errorMessage);
-				});
+		if (!isOpen || !isLocationSupported || !outlet?.coordinates) {
+			return;
 		}
+
+		// Request user location
+		requestLocation()
+			.then((coords) => {
+				console.log("User location:", coords);
+
+				// Validate location
+				const validation = validateLocationForOutlet(
+					coords,
+					outlet.coordinates!,
+					outlet.checkInRadius
+				);
+
+				console.log(
+					`Distance from outlet: ${validation.distance.toFixed(2)}m (limit: ${outlet.checkInRadius || 50}m)`
+				);
+
+				if (validation.valid) {
+					setUserLocation(coords);
+					setLocationValidated(true);
+				} else {
+					setScanError(
+						validation.error || "You must be at the cafe to check in."
+					);
+				}
+			})
+			.catch((err) => {
+				console.error("Location error:", err);
+				const errorMessage =
+					err instanceof Error ? err.message : "Failed to get location";
+				setScanError(errorMessage);
+			});
 	}, [isOpen, outlet, requestLocation, isLocationSupported]);
 
 	if (!isOpen) return null;
