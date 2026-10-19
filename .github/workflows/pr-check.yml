@@ -1,0 +1,182 @@
+name: Pull Request Verification
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ════════════════════════════════════════════════════════════════════════════
+  # 1. Format & Security Audit Check
+  # ════════════════════════════════════════════════════════════════════════════
+  check-format-and-security:
+    name: Format & Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check code formatting (Prettier)
+        run: pnpm run format:check
+
+      - name: Dependency security audit (Critical & High CVEs)
+        run: pnpm audit --audit-level high --ignore-unfixable
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 2. Code Quality Check (Typecheck & Lint)
+  # ════════════════════════════════════════════════════════════════════════════
+  check-code-quality:
+    name: Typecheck & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck TypeScript code
+        run: pnpm run typecheck
+
+      - name: Lint Next.js code
+        run: pnpm run lint
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 3. Unit Tests Check
+  # ════════════════════════════════════════════════════════════════════════════
+  check-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Jest test suite
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
+        run: pnpm test
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 4. Next.js Static Export Build Check
+  # ════════════════════════════════════════════════════════════════════════════
+  check-build:
+    name: Production Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22.14.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Next.js application
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
+        run: pnpm run build
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # 5. PR Gate (Aggregator Status Check for Branch Protection)
+  # ════════════════════════════════════════════════════════════════════════════
+  pr-gate:
+    name: PR Verification Gate
+    needs:
+      - check-format-and-security
+      - check-code-quality
+      - check-tests
+      - check-build
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate Check Results
+        run: |
+          echo "Evaluating verification outcomes..."
+          FORMAT_RES="${{ needs.check-format-and-security.result }}"
+          QUALITY_RES="${{ needs.check-code-quality.result }}"
+          TESTS_RES="${{ needs.check-tests.result }}"
+          BUILD_RES="${{ needs.check-build.result }}"
+
+          echo "Format & Security : $FORMAT_RES"
+          echo "Typecheck & Lint  : $QUALITY_RES"
+          echo "Unit Tests        : $TESTS_RES"
+          echo "Production Build  : $BUILD_RES"
+
+          for RES in "$FORMAT_RES" "$QUALITY_RES" "$TESTS_RES" "$BUILD_RES"; do
+            if [ "$RES" = "failure" ]; then
+              echo "Error: At least one required verification job failed."
+              exit 1
+            fi
+          done
+
+          echo "All PR verification checks passed successfully!"
